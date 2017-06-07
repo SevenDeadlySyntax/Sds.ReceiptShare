@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Sds.ReceiptShare.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace Sds.ReceiptShare.Api
 {
@@ -28,6 +30,7 @@ namespace Sds.ReceiptShare.Api
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
+            services.AddDbContext<DataContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Database")));
             services.AddMvc();
         }
 

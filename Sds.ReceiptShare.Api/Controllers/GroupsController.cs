@@ -34,7 +34,7 @@ namespace Sds.ReceiptShare.Api.Controllers
         public IActionResult Get(int id)
         {
             var groups = ModelGenerator.GenerateGroupList();
-            var matchedGroup = groups.FirstOrDefault(s => s.Id == id);
+            var matchedGroup = groups.FirstOrDefault(group => group.Id == id);
 
             if (matchedGroup != null) {
                 return Ok(matchedGroup);
@@ -51,6 +51,7 @@ namespace Sds.ReceiptShare.Api.Controllers
         [HttpPost]
         public void Post([FromBody]string value)
         {
+            
         }
 
         // PUT api/values/5

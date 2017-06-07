@@ -14,7 +14,7 @@ namespace Sds.ReceiptShare.Api.Mocks
             {
                 new Group(){
                     Id = 0,
-                    Currencies = GenerateCurrencyList(),
+                    Currencies = new List<Currency>(){ new Currency(){ Name="swiss franc", Symbol="("}, },
                     Name = "Group1"
                 },
                 new Group(){
@@ -26,6 +26,8 @@ namespace Sds.ReceiptShare.Api.Mocks
 
             return groups;
         }
+
+
         public static IEnumerable<Currency> GenerateCurrencyList()
         {
             var currencies = new List<Currency>
