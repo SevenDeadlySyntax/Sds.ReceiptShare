@@ -1,9 +1,0 @@
-c:\source\Sds.ReceiptShare\Sds.ReceiptShare.Api\bin\Debug\netcoreapp1.1\Sds.ReceiptShare.Api.deps.json
-c:\source\Sds.ReceiptShare\Sds.ReceiptShare.Api\bin\Debug\netcoreapp1.1\Sds.ReceiptShare.Api.runtimeconfig.json
-c:\source\Sds.ReceiptShare\Sds.ReceiptShare.Api\bin\Debug\netcoreapp1.1\Sds.ReceiptShare.Api.runtimeconfig.dev.json
-c:\source\Sds.ReceiptShare\Sds.ReceiptShare.Api\bin\Debug\netcoreapp1.1\Sds.ReceiptShare.Api.dll
-c:\source\Sds.ReceiptShare\Sds.ReceiptShare.Api\obj\Debug\netcoreapp1.1\Sds.ReceiptShare.Api.csprojResolveAssemblyReference.cache
-c:\source\Sds.ReceiptShare\Sds.ReceiptShare.Api\obj\Debug\netcoreapp1.1\Sds.ReceiptShare.Api.AssemblyInfo.cs
-c:\source\Sds.ReceiptShare\Sds.ReceiptShare.Api\bin\Debug\netcoreapp1.1\Sds.ReceiptShare.Api.pdb
-c:\source\Sds.ReceiptShare\Sds.ReceiptShare.Api\obj\Debug\netcoreapp1.1\Sds.ReceiptShare.Api.dll
-c:\source\Sds.ReceiptShare\Sds.ReceiptShare.Api\obj\Debug\netcoreapp1.1\Sds.ReceiptShare.Api.pdb

@@ -2,7 +2,7 @@
 
 namespace Sds.ReceiptShare.Domain
 {
-    public class Class1
+    public class Group
     {
     }
 }
