@@ -9,7 +9,7 @@ namespace Sds.ReceiptShare.Domain.Models
         public int Id { get; set; }
         public string Description { get; set; }
         public double Amount { get; set; }
-        public GroupCurrency Currenncy { get; set; }
+        public PartyCurrency Currenncy { get; set; }
         public Member Purchaser { get; set; }
         public IEnumerable<Member> Beneficiaries { get; set; }
     }

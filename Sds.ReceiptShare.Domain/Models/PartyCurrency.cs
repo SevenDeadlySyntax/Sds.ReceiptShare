@@ -1,6 +1,6 @@
 ﻿namespace Sds.ReceiptShare.Domain.Models
 {
-    public class GroupCurrency
+    public class PartyCurrency
     {
         public int Id { get; set; }
         public Currency Currency { get; set; }

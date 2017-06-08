@@ -6,6 +6,6 @@ namespace Sds.ReceiptShare.Domain.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string culture { get; set; }
+        public string Culture { get; set; }
     }
 }

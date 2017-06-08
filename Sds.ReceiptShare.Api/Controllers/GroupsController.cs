@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sds.ReceiptShare.Api.Models;
 using Sds.ReceiptShare.Api.Mocks;
+using Sds.ReceiptShare.Domain;
 
 namespace Sds.ReceiptShare.Api.Controllers
 {
@@ -13,6 +14,13 @@ namespace Sds.ReceiptShare.Api.Controllers
     [Route("api/Groups")]
     public class GroupsController : Controller
     {
+        private readonly DataContext _context;
+
+        public GroupsController(DataContext context)
+        {
+            _context = context;
+        }
+
         /// <summary>
         /// Returns all the groups
         /// TODO: Need to identify the user and return the groups for a specific user
@@ -49,9 +57,14 @@ namespace Sds.ReceiptShare.Api.Controllers
         /// </summary>
         /// <param name="value"></param>
         [HttpPost]
-        public void Post([FromBody]string value)
+        public void Post([FromBody]string name)
         {
-            
+            var party = new Domain.Models.Party()
+            {
+                Name = name
+            };
+
+            _context.Add(party);
         }
 
         // PUT api/values/5
