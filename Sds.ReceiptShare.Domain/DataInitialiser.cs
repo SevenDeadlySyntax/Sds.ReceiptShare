@@ -10,13 +10,13 @@ namespace Sds.ReceiptShare.Domain
     {
         public static void Initialize(DataContext context)
         {
+            context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
 
-            // Look for any students.
-            if (context.Parties.Any())
-            {
-                return;   // DB has been seeded
-            }
+            //if (context.Parties.Any())
+            //{
+            //    return;   // DB has been seeded
+            //}
 
             var member1 = new Member { Name = "Ed" };
             var members = new List<Member>() {
@@ -28,25 +28,28 @@ namespace Sds.ReceiptShare.Domain
                 new Member { Name = "Laura" },
                 new Member { Name = "Mike" },
             };
+
             context.Members.Add(member1);
             context.Members.AddRange(members);
             
-            var currency = new Currency() { Culture = "en-GB", Name = "Pound" };
-            context.Currencies.Add(currency);
-
+            var primaryCurrency = new Currency() { Symbol = "£", Name = "Pound" };
+            var purchaseCurrency = new Currency() { Symbol = "€", Name = "Euro" };
+            
+            context.Currencies.Add(primaryCurrency);
             context.SaveChanges();
 
-            var party = new Party()
+            var group = new Group()
             {
                 Name = "Snow Ballers",
-                PrimaryCurrency = currency,
+                PrimaryCurrency = primaryCurrency,                
                 Created = DateTime.Now,
                 Administrator = member1,
-                Members = members,
-                PurchaseCurrencies = new List<PartyCurrency> { new PartyCurrency { Currency = currency, ConvertionRate = 1 } }
+                PurchaseCurrencies = new List<GroupCurrency> { new GroupCurrency { Currency = purchaseCurrency, ConvertionRate = 1.3 } }
             };
 
-            context.Parties.Add(party);
+            group.Members = members.Select(s => new GroupMember() { Group = group, Member = s }).ToList();
+
+            context.Groups.Add(group);
             context.SaveChanges();
         }
     }

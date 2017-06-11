@@ -9,10 +9,11 @@ namespace Sds.ReceiptShare.Domain
     public class DataContext : DbContext
     {
         public DbSet<Member> Members { get; set; }
-        public DbSet<Party> Parties { get; set; }
+        public DbSet<Group> Groups { get; set; }
+        public DbSet<GroupMember> GroupMembers { get; set; }
         public DbSet<Currency> Currencies { get; set; }
-        public DbSet<PartyCurrency> PartyCurrencies { get; set; }
-        public DbSet<Purchase> Purchases{ get; set; }
+        public DbSet<GroupCurrency> GroupCurrencies { get; set; }
+        public DbSet<Purchase> Purchases { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -20,10 +21,14 @@ namespace Sds.ReceiptShare.Domain
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Member>().ToTable("Member");
+            modelBuilder.Entity<GroupMember>().HasKey(gm => new { gm.MemberId, gm.GroupId });
+            modelBuilder.Entity<Member>().HasMany(m => m.Groups).WithOne(g => g.Member).HasForeignKey(m => m.GroupId);
+            modelBuilder.Entity<Group>().HasMany(g=> g.Members).WithOne(m => m.Group).HasForeignKey(g => g.MemberId);
+
+
             modelBuilder.Entity<Currency>().ToTable("Currency");
-            modelBuilder.Entity<Party>().ToTable("Party");
-            modelBuilder.Entity<PartyCurrency>().ToTable("PartyCurrency");
+            modelBuilder.Entity<Group>().ToTable("Group");
+            modelBuilder.Entity<GroupCurrency>().ToTable("GroupCurrency");
             modelBuilder.Entity<Purchase>().ToTable("Purchase");
         }
     }

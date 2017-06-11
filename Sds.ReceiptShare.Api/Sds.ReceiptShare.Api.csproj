@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Mocks\ModelGenerator.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Managers\" />
+    <Folder Include="Mocks\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>

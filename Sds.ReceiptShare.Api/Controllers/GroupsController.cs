@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sds.ReceiptShare.Api.Models;
-using Sds.ReceiptShare.Api.Mocks;
 using Sds.ReceiptShare.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace Sds.ReceiptShare.Api.Controllers
 {
@@ -20,19 +20,7 @@ namespace Sds.ReceiptShare.Api.Controllers
         {
             _context = context;
         }
-
-        /// <summary>
-        /// Returns all the groups
-        /// TODO: Need to identify the user and return the groups for a specific user
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public IEnumerable<Group> Get()
-        {
-            var groups = ModelGenerator.GenerateGroupList();
-            return groups;
-        }
-
+        
         /// <summary>
         /// Returns details for a given group id
         /// </summary>
@@ -41,11 +29,35 @@ namespace Sds.ReceiptShare.Api.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var groups = ModelGenerator.GenerateGroupList();
-            var matchedGroup = groups.FirstOrDefault(group => group.Id == id);
+            var group = _context.Groups
+                .Include(s=> s.Members)
+                .Include(s=> s.Administrator)                
+                .Include(s=> s.PrimaryCurrency)
+                .Include(s=> s.PurchaseCurrencies)
+                .FirstOrDefault(s => s.Id == id);
 
-            if (matchedGroup != null) {
-                return Ok(matchedGroup);
+            if (group != null) {
+
+                var response = new UserGroup()
+                {
+                    Id = group.Id,
+                    Name = group.Name,
+                    Currencies = group.PurchaseCurrencies.Select(x => new Currency()
+                    {
+                        Id = x.Currency.Id,
+                        Name = x.Currency.Name,
+                        Symbol = x.Currency.Symbol,
+                        Rate = x.Currency
+                    }),
+                    PrimaryCurrency = new Currency()
+                    {
+                        Name = group.PrimaryCurrency.Name,
+                        Symbol = group.PrimaryCurrency.Symbol,
+                        Id = group.PrimaryCurrency.Id
+                    },
+                    AdminName = group.Administrator.Name
+                };
+                return Ok(response);
             }
 
             return NotFound();
@@ -59,7 +71,7 @@ namespace Sds.ReceiptShare.Api.Controllers
         [HttpPost]
         public void Post([FromBody]string name)
         {
-            var party = new Domain.Models.Party()
+            var party = new Domain.Models.Group()
             {
                 Name = name
             };
