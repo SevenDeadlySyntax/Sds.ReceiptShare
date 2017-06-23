@@ -7,7 +7,7 @@ namespace Sds.ReceiptShare.Api.Models
         public string Name { get; set; }
 
         public string Symbol { get; set; }
-        public Domain.Models.Currency Rate { get; internal set; }
+        public double Rate { get; internal set; }
         public int Id { get; internal set; }
     }
 }

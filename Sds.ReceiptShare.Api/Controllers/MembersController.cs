@@ -77,7 +77,7 @@ namespace Sds.ReceiptShare.Api.Controllers
                     Id = x.Currency.Id,
                     Name = x.Currency.Name,
                     Symbol = x.Currency.Symbol,
-                    Rate = x.Currency
+                    Rate = x.ConvertionRate
                 }),
                 PrimaryCurrency = new Currency() {
                     Name = s.PrimaryCurrency.Name,

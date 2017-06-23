@@ -31,9 +31,9 @@ namespace Sds.ReceiptShare.Api.Controllers
         {
             var group = _context.Groups
                 .Include(s=> s.Members)
-                .Include(s=> s.Administrator)                
+                .Include(s=> s.Administrator)
                 .Include(s=> s.PrimaryCurrency)
-                .Include(s=> s.PurchaseCurrencies)
+                .Include(s=> s.PurchaseCurrencies).ThenInclude(s=> s.Currency)
                 .FirstOrDefault(s => s.Id == id);
 
             if (group != null) {
@@ -47,7 +47,7 @@ namespace Sds.ReceiptShare.Api.Controllers
                         Id = x.Currency.Id,
                         Name = x.Currency.Name,
                         Symbol = x.Currency.Symbol,
-                        Rate = x.Currency
+                        Rate = x.ConvertionRate
                     }),
                     PrimaryCurrency = new Currency()
                     {
