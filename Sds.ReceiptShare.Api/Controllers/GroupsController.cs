@@ -20,7 +20,7 @@ namespace Sds.ReceiptShare.Api.Controllers
         {
             _context = context;
         }
-        
+
         /// <summary>
         /// Returns details for a given group id
         /// </summary>
@@ -30,15 +30,16 @@ namespace Sds.ReceiptShare.Api.Controllers
         public IActionResult Get(int id)
         {
             var group = _context.Groups
-                .Include(s=> s.Members)
-                .Include(s=> s.Administrator)
-                .Include(s=> s.PrimaryCurrency)
-                .Include(s=> s.PurchaseCurrencies).ThenInclude(s=> s.Currency)
+                .Include(s => s.Members)
+                .Include(s => s.Administrator)
+                .Include(s => s.PrimaryCurrency)
+                .Include(s => s.PurchaseCurrencies).ThenInclude(s => s.Currency)
                 .FirstOrDefault(s => s.Id == id);
 
-            if (group != null) {
+            if (group != null)
+            {
 
-                var response = new UserGroup()
+                var response = new GroupDetails()
                 {
                     Id = group.Id,
                     Name = group.Name,
@@ -69,20 +70,36 @@ namespace Sds.ReceiptShare.Api.Controllers
         /// </summary>
         /// <param name="value"></param>
         [HttpPost]
-        public void Post([FromBody]string name)
+        public IActionResult Post([FromBody]Group group)
         {
-            var party = new Domain.Models.Group()
-            {
-                Name = name
-            };
+            var administrator = _context.Members.First(s => s.Id == group.Id);
+            var newGroup = _context.Add(new Domain.Models.Group { Name = group.Name, Created = DateTime.Now, Administrator = administrator });
+            _context.SaveChanges();
 
-            _context.Add(party);
+            return Ok(newGroup)
         }
 
         // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [HttpPut("{id}/AddMembers")]
+        public IActionResult Members(int id, [FromBody]int[] ids)
         {
+            var group = _context.Groups.FirstOrDefault(s => s.Id == id);
+
+            if (group == null) return NoContent();
+            var successCount = 0;
+
+            foreach (var memberId in ids)
+            {
+                var member = _context.Members.FirstOrDefault(s => s.Id == memberId);
+                if (member != null)
+                {
+                    group.Members.Add(new Domain.Models.GroupMember { Member = member });
+                    successCount++;
+                }
+            }
+            _context.SaveChanges();
+
+            return Ok($"{successCount} members added to group {id}");
         }
     }
 }

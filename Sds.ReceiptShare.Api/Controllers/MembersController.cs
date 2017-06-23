@@ -70,7 +70,7 @@ namespace Sds.ReceiptShare.Api.Controllers
             return Ok(response); 
             */
 
-            return Ok(groups.Select(s => new UserGroup() {
+            return Ok(groups.Select(s => new GroupDetails() {
                 Id = s.Id,
                 Name = s.Name,
                 Currencies = s.PurchaseCurrencies.Select(x => new Currency() {
