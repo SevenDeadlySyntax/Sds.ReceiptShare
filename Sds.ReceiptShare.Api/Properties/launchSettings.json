@@ -1,4 +1,4 @@
-﻿{
+{
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
@@ -10,8 +10,8 @@
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "api/groups",
+      "launchBrowser": false,
+      "launchUrl": "api/groups/1",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -19,11 +19,11 @@
     "Sds.ReceiptShare.Api": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/groups",
+      "launchUrl": "api/groups/1",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:1299"
+      "applicationUrl": "http://receiptshare.api.local"
     }
   }
 }

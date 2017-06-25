@@ -31,25 +31,28 @@ namespace Sds.ReceiptShare.Domain
 
             context.Members.Add(member1);
             context.Members.AddRange(members);
-            
+
             var primaryCurrency = new Currency() { Symbol = "£", Name = "Pound" };
             var purchaseCurrency = new Currency() { Symbol = "€", Name = "Euro" };
-            
+
             context.Currencies.Add(primaryCurrency);
             context.SaveChanges();
 
             var group = new Group()
             {
                 Name = "Snow Ballers",
-                PrimaryCurrency = primaryCurrency,                
+                PrimaryCurrency = primaryCurrency,
                 Created = DateTime.Now,
                 Administrator = member1,
                 PurchaseCurrencies = new List<GroupCurrency> { new GroupCurrency { Currency = purchaseCurrency, ConvertionRate = 1.3 } }
             };
 
-            group.Members = members.Select(s => new GroupMember() { Group = group, Member = s }).ToList();
-
             context.Groups.Add(group);
+            context.SaveChanges();
+
+            var groupMembers = members.Select(s => new GroupMember() { GroupId = group.Id, MemberId = s.Id });
+            context.GroupMembers.AddRange(groupMembers);
+
             context.SaveChanges();
         }
     }
