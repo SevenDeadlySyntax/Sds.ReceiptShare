@@ -44,7 +44,7 @@ namespace Sds.ReceiptShare.Domain
                 PrimaryCurrency = primaryCurrency,
                 Created = DateTime.Now,
                 Administrator = member1,
-                PurchaseCurrencies = new List<GroupCurrency> { new GroupCurrency { Currency = purchaseCurrency, ConvertionRate = 1.3 } }
+                GroupCurrencies = new List<GroupCurrency> { new GroupCurrency { Currency = purchaseCurrency, ConvertionRate = 1.3 } }
             };
 
             context.Groups.Add(group);

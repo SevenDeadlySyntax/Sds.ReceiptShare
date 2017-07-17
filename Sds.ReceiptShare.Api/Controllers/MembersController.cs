@@ -73,7 +73,7 @@ namespace Sds.ReceiptShare.Api.Controllers
             return Ok(groups.Select(s => new GroupDetails() {
                 Id = s.Id,
                 Name = s.Name,
-                Currencies = s.PurchaseCurrencies.Select(x => new Currency() {
+                Currencies = s.GroupCurrencies.Select(x => new Currency() {
                     Id = x.Currency.Id,
                     Name = x.Currency.Name,
                     Symbol = x.Currency.Symbol,

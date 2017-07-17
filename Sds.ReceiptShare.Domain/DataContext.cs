@@ -21,15 +21,18 @@ namespace Sds.ReceiptShare.Domain
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<GroupMember>().HasKey(gm => new { gm.MemberId, gm.GroupId });
+
+            modelBuilder.Entity<Group>().HasMany(g => g.Members).WithOne(m => m.Group).HasForeignKey(g => g.GroupId);
+            modelBuilder.Entity<Group>().HasMany(g => g.GroupCurrencies).WithOne(m => m.Group).HasForeignKey(g => g.GroupId);
+
             modelBuilder.Entity<Member>().HasMany(m => m.Groups).WithOne(g => g.Member).HasForeignKey(m => m.MemberId);
-            modelBuilder.Entity<Group>().HasMany(g=> g.Members).WithOne(m => m.Group).HasForeignKey(g => g.GroupId);
-
-
-            modelBuilder.Entity<Currency>().ToTable("Currency");
-            modelBuilder.Entity<Group>().ToTable("Group");
-            modelBuilder.Entity<GroupCurrency>().ToTable("GroupCurrency");
-            modelBuilder.Entity<Purchase>().ToTable("Purchase");
+            modelBuilder.Entity<GroupMember>().HasKey(gm => new { gm.MemberId, gm.GroupId });
+            
+            modelBuilder.Entity<Currency>();
+            modelBuilder.Entity<GroupCurrency>().HasKey(gc => new { gc.CurrencyId, gc.GroupId });
+            
+            
+//            modelBuilder.Entity<Purchase>().ToTable("Purchase");
         }
     }
 

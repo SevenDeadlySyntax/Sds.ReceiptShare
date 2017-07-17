@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sds.ReceiptShare.Api.Models;
 using Sds.ReceiptShare.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Sds.ReceiptShare.Api.Controllers
 {
@@ -33,7 +32,7 @@ namespace Sds.ReceiptShare.Api.Controllers
                 .Include(s => s.Members)
                 .Include(s => s.Administrator)
                 .Include(s => s.PrimaryCurrency)
-                .Include(s => s.PurchaseCurrencies).ThenInclude(s => s.Currency)
+                .Include(s => s.GroupCurrencies).ThenInclude(s => s.Currency)
                 .FirstOrDefault(s => s.Id == id);
 
             if (group != null)
@@ -43,14 +42,14 @@ namespace Sds.ReceiptShare.Api.Controllers
                 {
                     Id = group.Id,
                     Name = group.Name,
-                    Currencies = group.PurchaseCurrencies.Select(x => new Currency()
+                    Currencies = group.GroupCurrencies.Select(x => new Currency()
                     {
                         Id = x.Currency.Id,
                         Name = x.Currency.Name,
                         Symbol = x.Currency.Symbol,
                         Rate = x.ConvertionRate
                     }),
-                    PrimaryCurrency = new Currency()
+                    PrimaryCurrency = group.PrimaryCurrency == null ? null : new Currency()
                     {
                         Name = group.PrimaryCurrency.Name,
                         Symbol = group.PrimaryCurrency.Symbol,
@@ -65,12 +64,34 @@ namespace Sds.ReceiptShare.Api.Controllers
         }
 
         /// <summary>
+        /// Gets the members of a specified group
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id}/Members")]
+        public IActionResult GetMembers(int id)
+        {
+
+            var group = _context.Groups.Include(s=> s.Administrator).FirstOrDefault(s => s.Id == id);
+            if (group == null) return NotFound();
+
+            var groupMembers = _context.GroupMembers.Include(s => s.Member)
+                .Where(s => s.GroupId == id)
+                .Select(s => new GroupMember { Id = s.MemberId, Name = s.Member.Name }).ToList();
+            groupMembers.Add(new GroupMember { Id = group.Administrator.Id, Name = group.Administrator.Name, IsAdmin = true });
+
+            if (!groupMembers.Any()) return NoContent();
+
+            return Ok(groupMembers);
+        }
+
+        /// <summary>
         /// Adds a new group
         /// TODO - need to identify the user and set them as the owner
         /// Example request body: {"Id": 0,"Name": "Test Group","AdminId": 1}
-    /// </summary>
-    /// <param name="value"></param>
-    [HttpPost]
+        /// </summary>
+        /// <param name="value"></param>
+        [HttpPost]
         public IActionResult Post([FromBody]Group group)
         {
             if (group == null || group.Name == null || group.AdminId == 0) return BadRequest("Required fields not provided.");
@@ -80,15 +101,15 @@ namespace Sds.ReceiptShare.Api.Controllers
 
             return Ok(newGroup);
         }
-        
+
         /// <summary>
         /// Sample body: [2,3]
-        /// Sample URL: api/groups/1/AddMembers
+        /// Sample URL: api/groups/1/Members
         /// </summary>
         /// <param name="id"></param>
         /// <param name="ids"></param>
         /// <returns></returns>
-        [HttpPut("{id}/AddMembers")]
+        [HttpPut("{id}/Members")]
         public IActionResult Members(int id, [FromBody]int[] ids)
         {
             var successCount = 0;
@@ -96,34 +117,81 @@ namespace Sds.ReceiptShare.Api.Controllers
             // If no member ids, return bad request
             if (ids == null || !ids.Any()) return BadRequest("No members specified");
 
-            // If group not found, return No Content (TBC: or not found??)
+            // If group not found, return Not Found
             var group = _context.Groups
                 .Include(s => s.Members)
+                .Include(s=> s.Administrator)
                 .FirstOrDefault(s => s.Id == id);
-            if (group == null) return NoContent();
-                        
+            if (group == null) return NotFound();
+
             if (group.Members == null) group.Members = new List<Domain.Models.GroupMember>();
 
             // For each member specified...
             foreach (var memberId in ids)
             {
-                // Check that the member does not already exist in the group
-                if (!group.Members.Any(s => s.MemberId == memberId)) {
+                // ...Check that the member does not already exist in the group (and is not the admin)...
+                if (group.Members.Any(s => s.MemberId == memberId) || group.Administrator.Id == memberId) continue;
 
-                    // Get the matching member record
-                    var member = _context.Members.FirstOrDefault(s => s.Id == memberId);
-                    if (member != null)
-                    {
-                        // Create new group member record
-                       // _context.GroupMembers.Add(new Domain.Models.GroupMember { MemberId = memberId });
-                        group.Members.Add(new Domain.Models.GroupMember { MemberId = memberId });
-                        successCount++;
-                    }
+                // ...Get the matching member record...
+                var member = _context.Members.FirstOrDefault(s => s.Id == memberId);
+                if (member != null)
+                {
+                    // ...Create new group member record...
+                    // _context.GroupMembers.Add(new Domain.Models.GroupMember { MemberId = memberId });
+                    group.Members.Add(new Domain.Models.GroupMember { MemberId = memberId });
+                    successCount++;
                 }
+
             }
             _context.SaveChanges();
 
             return Ok($"{successCount} members added to group {id}");
+        }
+
+        /// <summary>
+        /// Add purchase currencies to a group
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{id}/Currencies")]
+        public IActionResult Currencies(int id, [FromBody]int[] ids)
+        {
+            var successCount = 0;
+
+            // If no member ids, return bad request
+            if (ids == null || !ids.Any()) return BadRequest("No currencies specified");
+
+            // Get the group
+            var group = _context.Groups
+                .Include(s => s.GroupCurrencies)
+                .Include(s=>s.PrimaryCurrency)
+                .FirstOrDefault(s => s.Id == id);
+
+
+            // If group not found, return Not Found
+            if (group == null) return NotFound();
+
+            //
+            if (group.GroupCurrencies == null) group.GroupCurrencies = new List<Domain.Models.GroupCurrency>();
+
+            // For each member specified...
+            foreach (var currencyId in ids)
+            {
+                // ...Check that the member does not already exist in the group (and is not the admin)...
+                if (group.GroupCurrencies.Any(s => s.CurrencyId == currencyId) || group.PrimaryCurrency.Id == currencyId) continue;
+
+                // ...Get the matching member record...
+                var currency = _context.Currencies.FirstOrDefault(s => s.Id == currencyId);
+                if (currency != null)
+                {
+                    // ...Create new group member record...
+                    group.GroupCurrencies.Add(new Domain.Models.GroupCurrency { CurrencyId = currencyId });
+                    successCount++;
+                }
+
+            }
+            _context.SaveChanges();
+
+            return Ok($"{successCount} currencies added to group {id}");
         }
     }
 }
