@@ -1,10 +1,9 @@
 ﻿using System.Globalization;
 
-namespace Sds.ReceiptShare.Domain.Models
+namespace Sds.ReceiptShare.Domain.Entities
 {
-    public class Currency
+    public class Currency : Entity
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Symbol { get; set; }
     }

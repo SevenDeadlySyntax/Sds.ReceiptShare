@@ -1,11 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sds.ReceiptShare.Api", "Sds.ReceiptShare.Api\Sds.ReceiptShare.Api.csproj", "{6ED2CABC-9A46-4030-8715-FA992197006A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sds.ReceiptShare.Api", "Sds.ReceiptShare.Api\Sds.ReceiptShare.Api.csproj", "{6ED2CABC-9A46-4030-8715-FA992197006A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sds.ReceiptShare.Domain", "Sds.ReceiptShare.Domain\Sds.ReceiptShare.Domain.csproj", "{7B4AFFE4-08CC-4F6B-885A-1AF9003FE54F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sds.ReceiptShare.Domain", "Sds.ReceiptShare.Domain\Sds.ReceiptShare.Domain.csproj", "{7B4AFFE4-08CC-4F6B-885A-1AF9003FE54F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sds.ReceiptShare.Core", "Sds.ReceiptShare.Core\Sds.ReceiptShare.Core.csproj", "{3D993D1A-9B2B-4D75-8CE9-59C7FFF0D19B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sds.ReceiptShare.Logic", "Sds.ReceiptShare.Logic\Sds.ReceiptShare.Logic.csproj", "{8F5789DC-1DE3-44C0-9E4A-FC597B867AE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sds.ReceiptShare.Data", "Sds.ReceiptShare.Data\Sds.ReceiptShare.Data.csproj", "{F3F48928-D70A-4C34-94CD-6B6421A3FE0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +27,18 @@ Global
 		{7B4AFFE4-08CC-4F6B-885A-1AF9003FE54F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B4AFFE4-08CC-4F6B-885A-1AF9003FE54F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B4AFFE4-08CC-4F6B-885A-1AF9003FE54F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D993D1A-9B2B-4D75-8CE9-59C7FFF0D19B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D993D1A-9B2B-4D75-8CE9-59C7FFF0D19B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D993D1A-9B2B-4D75-8CE9-59C7FFF0D19B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D993D1A-9B2B-4D75-8CE9-59C7FFF0D19B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F5789DC-1DE3-44C0-9E4A-FC597B867AE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F5789DC-1DE3-44C0-9E4A-FC597B867AE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F5789DC-1DE3-44C0-9E4A-FC597B867AE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F5789DC-1DE3-44C0-9E4A-FC597B867AE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3F48928-D70A-4C34-94CD-6B6421A3FE0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3F48928-D70A-4C34-94CD-6B6421A3FE0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3F48928-D70A-4C34-94CD-6B6421A3FE0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3F48928-D70A-4C34-94CD-6B6421A3FE0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

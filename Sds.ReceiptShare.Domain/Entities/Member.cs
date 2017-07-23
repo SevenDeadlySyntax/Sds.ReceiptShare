@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace Sds.ReceiptShare.Domain.Models
+namespace Sds.ReceiptShare.Domain.Entities
 {
-    public class Member
+    public class Member : Entity
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public ICollection<GroupMember> Groups { get; set; }
     }

@@ -1,4 +1,4 @@
-﻿using Sds.ReceiptShare.Domain.Models;
+﻿using Sds.ReceiptShare.Domain.Entities;
 
 namespace Sds.ReceiptShare.Api.Models
 {

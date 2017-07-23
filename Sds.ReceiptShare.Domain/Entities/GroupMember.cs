@@ -1,6 +1,6 @@
-﻿namespace Sds.ReceiptShare.Domain.Models
+﻿namespace Sds.ReceiptShare.Domain.Entities
 {
-    public class GroupMember
+    public class GroupMember : JoiningEntity
     {
         public int GroupId { get; set; }
         public Group Group { get; set; }

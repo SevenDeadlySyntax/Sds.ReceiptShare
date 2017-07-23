@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Sds.ReceiptShare.Api.Models;
-using Sds.ReceiptShare.Domain;
+using Sds.ReceiptShare.Data;
 
 namespace Sds.ReceiptShare.Api.Controllers
 {
@@ -41,7 +41,7 @@ namespace Sds.ReceiptShare.Api.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]string name, string symbol)
         {
-            var newCurrecny = _context.Add(new Domain.Models.Currency()
+            var newCurrecny = _context.Add(new Domain.Entities.Currency()
             {
                 Name = name,
                 Symbol = symbol

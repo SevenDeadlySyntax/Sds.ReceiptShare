@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Sds.ReceiptShare.Api.Models;
-using Sds.ReceiptShare.Domain;
+using Sds.ReceiptShare.Data;
+using Sds.ReceiptShare.Domain.Entities;
 
 namespace Sds.ReceiptShare.Api.Controllers
 {
@@ -73,13 +74,13 @@ namespace Sds.ReceiptShare.Api.Controllers
             return Ok(groups.Select(s => new GroupDetails() {
                 Id = s.Id,
                 Name = s.Name,
-                Currencies = s.GroupCurrencies.Select(x => new Currency() {
+                Currencies = s.GroupCurrencies.Select(x => new Models.Currency() {
                     Id = x.Currency.Id,
                     Name = x.Currency.Name,
                     Symbol = x.Currency.Symbol,
                     Rate = x.ConvertionRate
                 }),
-                PrimaryCurrency = new Currency() {
+                PrimaryCurrency = new Models.Currency() {
                     Name = s.PrimaryCurrency.Name,
                     Symbol = s.PrimaryCurrency.Symbol,
                     Id = s.PrimaryCurrency.Id
@@ -106,7 +107,7 @@ namespace Sds.ReceiptShare.Api.Controllers
         [HttpPost]
         public void Post([FromBody]string name)
         {
-            var party = new Domain.Models.Group()
+            var party = new Domain.Entities.Group()
             {
                 Name = name
             };

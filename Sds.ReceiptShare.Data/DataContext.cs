@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Sds.ReceiptShare.Domain.Models;
+using Sds.ReceiptShare.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sds.ReceiptShare.Domain
+namespace Sds.ReceiptShare.Data
 {
     public class DataContext : DbContext
     {

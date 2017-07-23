@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sds.ReceiptShare.Data\Sds.ReceiptShare.Data.csproj" />
+    <ProjectReference Include="..\Sds.ReceiptShare.Domain\Sds.ReceiptShare.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

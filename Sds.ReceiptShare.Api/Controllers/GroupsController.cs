@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Sds.ReceiptShare.Api.Models;
-using Sds.ReceiptShare.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Sds.ReceiptShare.Logic.Interfaces;
 
 namespace Sds.ReceiptShare.Api.Controllers
 {
@@ -13,11 +13,11 @@ namespace Sds.ReceiptShare.Api.Controllers
     [Route("api/Groups")]
     public class GroupsController : Controller
     {
-        private readonly DataContext _context;
+        private readonly IGroupManager _groupManager;
 
-        public GroupsController(DataContext context)
+        public GroupsController(IGroupManager groupManager)
         {
-            _context = context;
+            _groupManager = groupManager;
         }
 
         /// <summary>
@@ -28,12 +28,7 @@ namespace Sds.ReceiptShare.Api.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var group = _context.Groups
-                .Include(s => s.Members)
-                .Include(s => s.Administrator)
-                .Include(s => s.PrimaryCurrency)
-                .Include(s => s.GroupCurrencies).ThenInclude(s => s.Currency)
-                .FirstOrDefault(s => s.Id == id);
+            var group = _groupManager.GetDetails(id);
 
             if (group != null)
             {
@@ -62,7 +57,7 @@ namespace Sds.ReceiptShare.Api.Controllers
 
             return NotFound();
         }
-
+        /*
         /// <summary>
         /// Gets the members of a specified group
         /// </summary>
@@ -193,5 +188,6 @@ namespace Sds.ReceiptShare.Api.Controllers
 
             return Ok($"{successCount} currencies added to group {id}");
         }
+        */
     }
 }
