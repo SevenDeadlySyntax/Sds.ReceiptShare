@@ -28,7 +28,6 @@ namespace Sds.ReceiptShare.Data.Repository
             return Read<T>(linkedObjects).SingleOrDefault(s => s.Id == id);
         }
 
-
         public virtual IQueryable<T> ReadActive<T>(params string[] linkedObjects) where T : DeletableEntity
         {
             return this.Read<T>(linkedObjects).Where(s=> !s.IsDeleted);            

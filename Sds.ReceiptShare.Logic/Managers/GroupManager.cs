@@ -35,7 +35,7 @@ namespace Sds.ReceiptShare.Logic.Managers
         /// <returns>Matched group or null</returns>
         public Group Get(int id)
         {
-            return Repository.Read<Group>(id);
+            return Repository.Read<Group>(id, "Administrator");
         }
 
         /// <summary>
@@ -48,14 +48,14 @@ namespace Sds.ReceiptShare.Logic.Managers
             return Repository.Read<Group>(id, "Members", "Administrator", "PrimaryCurrency", "GroupCurrencies", "GroupCurrencies.Currency");
         }
 
-        public IEnumerable<Group> Get()
+        public void RemoveMember(int groupId, int groupMemberId)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveMember(int groupId, int groupMemberId)
+        public ICollection<GroupMember> GetMembers(int groupId)
         {
-            throw new NotImplementedException();
+            return Repository.Read<Group>(groupId, "Members", "Members.Member").Members;
         }
     }
 }

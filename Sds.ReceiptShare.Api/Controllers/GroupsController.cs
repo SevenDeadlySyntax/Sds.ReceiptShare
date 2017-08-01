@@ -57,7 +57,7 @@ namespace Sds.ReceiptShare.Api.Controllers
 
             return NotFound();
         }
-        /*
+        
         /// <summary>
         /// Gets the members of a specified group
         /// </summary>
@@ -66,20 +66,17 @@ namespace Sds.ReceiptShare.Api.Controllers
         [HttpGet("{id}/Members")]
         public IActionResult GetMembers(int id)
         {
-
-            var group = _context.Groups.Include(s=> s.Administrator).FirstOrDefault(s => s.Id == id);
+            var group = _groupManager.Get(id);
             if (group == null) return NotFound();
 
-            var groupMembers = _context.GroupMembers.Include(s => s.Member)
-                .Where(s => s.GroupId == id)
-                .Select(s => new GroupMember { Id = s.MemberId, Name = s.Member.Name }).ToList();
+            var groupMembers = _groupManager.GetMembers(id).Select(s => new GroupMember { Id = s.MemberId, Name = s.Member.Name }).ToList();
             groupMembers.Add(new GroupMember { Id = group.Administrator.Id, Name = group.Administrator.Name, IsAdmin = true });
 
             if (!groupMembers.Any()) return NoContent();
 
             return Ok(groupMembers);
         }
-
+        /*
         /// <summary>
         /// Adds a new group
         /// TODO - need to identify the user and set them as the owner

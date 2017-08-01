@@ -1,12 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Sds.ReceiptShare.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sds.ReceiptShare.Data
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Member> Members { get; set; }
         public DbSet<Group> Groups { get; set; }
@@ -21,7 +19,6 @@ namespace Sds.ReceiptShare.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             modelBuilder.Entity<Group>().HasMany(g => g.Members).WithOne(m => m.Group).HasForeignKey(g => g.GroupId);
             modelBuilder.Entity<Group>().HasMany(g => g.GroupCurrencies).WithOne(m => m.Group).HasForeignKey(g => g.GroupId);
 
@@ -30,9 +27,10 @@ namespace Sds.ReceiptShare.Data
             
             modelBuilder.Entity<Currency>();
             modelBuilder.Entity<GroupCurrency>().HasKey(gc => new { gc.CurrencyId, gc.GroupId });
-            
-            
-//            modelBuilder.Entity<Purchase>().ToTable("Purchase");
+
+            base.OnModelCreating(modelBuilder);
+
+            //            modelBuilder.Entity<Purchase>().ToTable("Purchase");
         }
     }
 

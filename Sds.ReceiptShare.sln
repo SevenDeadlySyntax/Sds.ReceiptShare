@@ -7,11 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sds.ReceiptShare.Api", "Sds
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sds.ReceiptShare.Domain", "Sds.ReceiptShare.Domain\Sds.ReceiptShare.Domain.csproj", "{7B4AFFE4-08CC-4F6B-885A-1AF9003FE54F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sds.ReceiptShare.Core", "Sds.ReceiptShare.Core\Sds.ReceiptShare.Core.csproj", "{3D993D1A-9B2B-4D75-8CE9-59C7FFF0D19B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sds.ReceiptShare.Core", "Sds.ReceiptShare.Core\Sds.ReceiptShare.Core.csproj", "{3D993D1A-9B2B-4D75-8CE9-59C7FFF0D19B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sds.ReceiptShare.Logic", "Sds.ReceiptShare.Logic\Sds.ReceiptShare.Logic.csproj", "{8F5789DC-1DE3-44C0-9E4A-FC597B867AE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sds.ReceiptShare.Logic", "Sds.ReceiptShare.Logic\Sds.ReceiptShare.Logic.csproj", "{8F5789DC-1DE3-44C0-9E4A-FC597B867AE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sds.ReceiptShare.Data", "Sds.ReceiptShare.Data\Sds.ReceiptShare.Data.csproj", "{F3F48928-D70A-4C34-94CD-6B6421A3FE0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sds.ReceiptShare.Data", "Sds.ReceiptShare.Data\Sds.ReceiptShare.Data.csproj", "{F3F48928-D70A-4C34-94CD-6B6421A3FE0E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sds.ReceiptShare.Ui.Web", "Sds.ReceiptShare.Ui.Web\Sds.ReceiptShare.Ui.Web.csproj", "{E53AA37D-48FE-44BE-A0B1-4778AAD1FBA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{F3F48928-D70A-4C34-94CD-6B6421A3FE0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3F48928-D70A-4C34-94CD-6B6421A3FE0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3F48928-D70A-4C34-94CD-6B6421A3FE0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E53AA37D-48FE-44BE-A0B1-4778AAD1FBA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E53AA37D-48FE-44BE-A0B1-4778AAD1FBA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E53AA37D-48FE-44BE-A0B1-4778AAD1FBA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E53AA37D-48FE-44BE-A0B1-4778AAD1FBA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

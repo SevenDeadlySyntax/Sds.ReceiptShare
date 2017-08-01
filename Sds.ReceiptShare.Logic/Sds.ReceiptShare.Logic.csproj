@@ -9,4 +9,8 @@
     <ProjectReference Include="..\Sds.ReceiptShare.Domain\Sds.ReceiptShare.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Exceptions\" />
+  </ItemGroup>
+
 </Project>
