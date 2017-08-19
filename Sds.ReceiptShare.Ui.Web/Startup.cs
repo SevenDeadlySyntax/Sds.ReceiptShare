@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using Sds.ReceiptShare.Data;
 using Sds.ReceiptShare.Data.Repository;
 using Sds.ReceiptShare.Domain.Entities;
+using Sds.ReceiptShare.Logic.Interfaces;
+using Sds.ReceiptShare.Logic.Managers;
 using Sds.ReceiptShare.Ui.Web.Models;
 using Sds.ReceiptShare.Ui.Web.Services;
 
@@ -40,13 +42,13 @@ namespace Sds.ReceiptShare.Ui.Web
             // Add framework services.
             services.AddDbContext<DataContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Database")));
 
-
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<DataContext>()
                 .AddDefaultTokenProviders();
 
             services.AddScoped<IRepository, Repository>();
-            //services.AddScoped<IGroupManager, GroupManager>();
+            services.AddScoped<IGroupManager, GroupManager>();
+            services.AddScoped<IMemberManager, MemberManager>();
             services.AddMvc();
 
             // Add application services.
@@ -55,10 +57,11 @@ namespace Sds.ReceiptShare.Ui.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, DataContext context)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+            DataInitialiser.Initialize(context);
 
             if (env.IsDevelopment())
             {

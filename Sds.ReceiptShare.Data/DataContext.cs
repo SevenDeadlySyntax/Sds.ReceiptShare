@@ -22,6 +22,8 @@ namespace Sds.ReceiptShare.Data
             modelBuilder.Entity<Group>().HasMany(g => g.Members).WithOne(m => m.Group).HasForeignKey(g => g.GroupId);
             modelBuilder.Entity<Group>().HasMany(g => g.GroupCurrencies).WithOne(m => m.Group).HasForeignKey(g => g.GroupId);
 
+            modelBuilder.Entity<ApplicationUser>().HasOne(u => u.Member).WithOne(m => m.ApplicationUser).HasForeignKey<Member>(u => u.ApplicationUserId);
+
             modelBuilder.Entity<Member>().HasMany(m => m.Groups).WithOne(g => g.Member).HasForeignKey(m => m.MemberId);
             modelBuilder.Entity<GroupMember>().HasKey(gm => new { gm.MemberId, gm.GroupId });
             

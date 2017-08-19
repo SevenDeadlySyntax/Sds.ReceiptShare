@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 using Sds.ReceiptShare.Domain.Entities;
 using Sds.ReceiptShare.Data.Repository;
+using System.Linq.Expressions;
+using System.Linq;
 
 namespace Sds.ReceiptShare.Logic.Managers
 {
@@ -56,6 +58,11 @@ namespace Sds.ReceiptShare.Logic.Managers
         public ICollection<GroupMember> GetMembers(int groupId)
         {
             return Repository.Read<Group>(groupId, "Members", "Members.Member").Members;
+        }
+
+        public ICollection<Group> GetUserGroups(int memberId)
+        {
+            return Repository.ReadActive<Group>("Members").Where(s => s.Members.Select(x=>x.MemberId).Contains(memberId)).ToList();
         }
     }
 }

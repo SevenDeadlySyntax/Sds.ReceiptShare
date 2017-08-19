@@ -11,7 +11,8 @@ namespace Sds.ReceiptShare.Data.Repository
         T Read<T>(int id, params string[] linkedObjects) where T : Entity;
         IQueryable<T> Read<T>(params string[] linkedObjects) where T : Entity;
         IQueryable<T> Read<T>(Expression<Func<T, bool>> query, params string[] linkedObjects) where T : Entity;
-        
+        IQueryable<T> ReadActive<T>(params string[] linkedObjects) where T : DeletableEntity;
+
         T Insert<T>(T entity) where T : Entity;
         T Update<T>(T entityToUpdate) where T : Entity;
         void Delete<T>(T entityToUpdate) where T : DeletableEntity;
