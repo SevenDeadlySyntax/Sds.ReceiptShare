@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -42,9 +43,15 @@ namespace Sds.ReceiptShare.Ui.Web
             // Add framework services.
             services.AddDbContext<DataContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Database")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<DataContext>()
-                .AddDefaultTokenProviders();
+            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<DataContext>();
+
+            // If you want to tweak Identity cookies, they're no longer part of IdentityOptions.
+            services.ConfigureApplicationCookie(options => options.LoginPath = "/Account/LogIn");
+            services.AddAuthentication()
+                    .AddFacebook(options => {
+                        options.AppId = Configuration["Authentication:Facebook:AppId"];
+                        options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                    });
 
             services.AddScoped<IRepository, Repository>();
             services.AddScoped<IGroupManager, GroupManager>();
@@ -76,16 +83,8 @@ namespace Sds.ReceiptShare.Ui.Web
 
             app.UseStaticFiles();
 
-            app.UseIdentity();
-
-            app.UseFacebookAuthentication(new FacebookOptions()
-            {
-                AppId = Configuration["Authentication:Facebook:AppId"],
-                AppSecret = Configuration["Authentication:Facebook:AppSecret"]
-            });
-
-            // Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
-
+            app.UseAuthentication();
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
