@@ -1,5 +1,6 @@
 ﻿using Sds.ReceiptShare.Domain.Entities;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -17,6 +18,7 @@ namespace Sds.ReceiptShare.Data.Repository
         T Update<T>(T entityToUpdate) where T : Entity;
         void Delete<T>(T entityToUpdate) where T : DeletableEntity;
 
+        IEnumerable<GroupMember> GetGroups(string id);
         void Save();
     }
 }

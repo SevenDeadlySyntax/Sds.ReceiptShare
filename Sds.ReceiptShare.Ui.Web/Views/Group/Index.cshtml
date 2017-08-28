@@ -1,0 +1,49 @@
+﻿@model Sds.ReceiptShare.Ui.Web.Models.Group.DetailsViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+<h2>Index</h2>
+<div>
+    <h4>Group Details</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedOn)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreatedOn)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Members)
+        </dt>
+        <dd>
+            <ul>
+                @foreach (var item in Model.Members)
+            {
+                    <li>
+                        @item.Name
+                        @if (item.IsAdministrator)
+                        {<strong>Admin</strong>}
+                    </li>
+                }
+            </ul>
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="AddMember"></a>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Index" asp-controller="Home">Back to List</a>
+</div>

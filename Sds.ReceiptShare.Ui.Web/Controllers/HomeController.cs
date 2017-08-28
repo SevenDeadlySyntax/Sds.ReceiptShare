@@ -8,6 +8,7 @@ using Sds.ReceiptShare.Ui.Web.Models.Home;
 using Sds.ReceiptShare.Logic.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Sds.ReceiptShare.Domain.Entities;
+using Sds.ReceiptShare.Logic.Managers;
 
 namespace Sds.ReceiptShare.Ui.Web.Controllers
 {
@@ -15,14 +16,12 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
     public class HomeController : Controller
     {
         private readonly IGroupManager _groupManager;
-        private readonly IMemberManager _memberManager;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private ApplicationUser _user;
+        //private readonly IMemberManager _memberManager;
+        private readonly ApplicationUserManager _userManager;
 
-        public HomeController(IGroupManager groupManager, IMemberManager memberManager, UserManager<ApplicationUser> userManager)
+        public HomeController(IGroupManager groupManager, ApplicationUserManager userManager)
         {
             _groupManager = groupManager;
-            _memberManager = memberManager;
             _userManager = userManager;
 
         }
@@ -32,47 +31,23 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         public async Task<IActionResult> Index()
         {
             // Get the authenticated user
-            _user = _userManager.GetUserAsync(HttpContext.User).Result;
+            var user = _userManager.GetUserAsync(HttpContext.User).Result;
 
-            if (_user.Member == null || string.IsNullOrEmpty(_user.Member.Name))
+            if (string.IsNullOrEmpty(user.UserName))
             {
                 return RedirectToAction("SetName");
             }
 
             // Fetch the athenticated user's groups
-            var groups = _memberManager.GetGroups(_user.Member.Id);
+            IEnumerable<GroupMember> groups = _userManager.GetGroups(user);
 
             var homeViewModel = new HomeViewModel()
             {
-                UserName = _user.Member.Name,
-                Groups = groups.Select(s => new GroupListItem() { Name = s.Name, NumberOfMembers = s.Members.Count }).ToList()
+                UserName = user.Name,
+                Groups = groups?.Select(s => new GroupListItem() { Name = s.Member.Name, NumberOfMembers = s.Group.Members.Count }).ToList()
             };
 
             return View(homeViewModel);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> SetName()
-        {
-            _user = _userManager.GetUserAsync(HttpContext.User).Result;
-            var model = new SetNameViewModel();
-            if (_user.Member == null)
-            {
-                _user.Member = new Member { Name = _user.UserName };
-                await _userManager.UpdateAsync(_user);
-            }
-
-            model.Name = _user.Member.Name;
-            return View(model);
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> SetName(SetNameViewModel model)
-        {
-            _user = _userManager.GetUserAsync(HttpContext.User).Result;
-            _user.Member.Name = model.Name;
-            await _userManager.UpdateAsync(_user);
-            return RedirectToAction("Index");
         }
 
         public IActionResult About()

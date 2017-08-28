@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Sds.ReceiptShare.Domain.Entities;
-using Sds.ReceiptShare.Ui.Web.Models.ManageViewModels;
+using Sds.ReceiptShare.Ui.Web.Models.Manage;
 using Sds.ReceiptShare.Ui.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 
@@ -92,6 +92,31 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         public IActionResult AddPhoneNumber()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SetName(string returnUrl = null)
+        {
+            var user = _userManager.GetUserAsync(HttpContext.User).Result;
+            var model = new SetNameViewModel()
+            {
+                Name = user.UserName ?? user.Email,
+                ReturnUrl = returnUrl
+            };
+
+            return View(model);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> SetName(SetNameViewModel model)
+        {
+            var user = _userManager.GetUserAsync(HttpContext.User).Result;
+            user.UserName = model.Name;
+            await _userManager.UpdateAsync(user);
+
+            if (!string.IsNullOrEmpty(model.ReturnUrl)) return Redirect(model.ReturnUrl);
+
+            return RedirectToAction("Index");
         }
 
         //

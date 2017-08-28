@@ -10,8 +10,8 @@ namespace Sds.ReceiptShare.Data
     {
         public static void Initialize(DataContext context)
         {
-            //context.Database.EnsureDeleted();
-            //context.Database.EnsureCreated();
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
 
             if (context.Users.Any())
             {

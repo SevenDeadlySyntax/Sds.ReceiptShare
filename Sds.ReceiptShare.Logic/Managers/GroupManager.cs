@@ -17,7 +17,9 @@ namespace Sds.ReceiptShare.Logic.Managers
 
         public Group Add(Group group)
         {
-            throw new NotImplementedException();
+            _repository.Insert<Group>(group);
+            _repository.Save();
+            return group;
         }
 
         public void AddCurrency(int groupId, int currencyId)
@@ -37,7 +39,7 @@ namespace Sds.ReceiptShare.Logic.Managers
         /// <returns>Matched group or null</returns>
         public Group Get(int id)
         {
-            return Repository.Read<Group>(id, "Administrator");
+            return _repository.Read<Group>(id);
         }
 
         /// <summary>
@@ -47,7 +49,7 @@ namespace Sds.ReceiptShare.Logic.Managers
         /// <returns>Matched group or null</returns>
         public Group GetDetails(int id)
         {
-            return Repository.Read<Group>(id, "Members", "Administrator", "PrimaryCurrency", "GroupCurrencies", "GroupCurrencies.Currency");
+            return _repository.Read<Group>(id, "Members", "PrimaryCurrency", "GroupCurrencies", "GroupCurrencies.Currency");
         }
 
         public void RemoveMember(int groupId, int groupMemberId)
@@ -55,14 +57,14 @@ namespace Sds.ReceiptShare.Logic.Managers
             throw new NotImplementedException();
         }
 
-        public ICollection<GroupMember> GetMembers(int groupId)
+        public IEnumerable<GroupMember> GetMembers(int groupId)
         {
-            return Repository.Read<Group>(groupId, "Members", "Members.Member").Members;
+            return _repository.Read<Group>(groupId, "Members", "Members.Member").Members;
         }
 
-        public ICollection<Group> GetUserGroups(int memberId)
+        public ICollection<Group> GetUserGroups(string memberId)
         {
-            return Repository.ReadActive<Group>("Members").Where(s => s.Members.Select(x=>x.MemberId).Contains(memberId)).ToList();
+            return _repository.ReadActive<Group>("Members").Where(s => s.Members.Select(x => x.MemberId).Contains(memberId)).ToList();
         }
     }
 }

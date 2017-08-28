@@ -7,7 +7,6 @@ namespace Sds.ReceiptShare.Domain.Entities
     /// </summary>
     public class Member : Entity
     {
-        public string Name { get; set; }
         public ICollection<GroupMember> Groups { get; set; }
 
         /// <summary>

@@ -6,9 +6,9 @@ namespace Sds.ReceiptShare.Logic.Interfaces
     public interface IGroupManager
     {
         Group Get(int id);
-        ICollection<Group> GetUserGroups(int userId); 
+        ICollection<Group> GetUserGroups(string userId); 
         Group GetDetails(int id);
-        ICollection<GroupMember> GetMembers(int groupId);
+        IEnumerable<GroupMember> GetMembers(int groupId);
         Group Add(Group group);
         void AddMembers(int groupId, IEnumerable<GroupMember> members);
         void RemoveMember(int groupId, int groupMemberId);

@@ -3,12 +3,18 @@
     ViewData["Title"] = $"{Model.UserName}'s groups";
 }
 
-<h1>Hi @Model.UserName</h1>
-<p>You are currently in @Model.Groups.Count groups</p>
+<h2>Hi @Model.UserName</h2>
 
-<input type="button" value="Create Group"/>
+<a asp-action="Create" asp-controller="Group">Create group</a>
 
-@foreach (var item in Model.Groups)
+@if (Model.Groups != null && Model.Groups.Any())
 {
+    <p>You are currently in @Model.Groups.Count groups</p>
+
+    foreach (var item in Model.Groups)
+    {
     <h3>@item.Name</h3>
+    }
+}else{
+    <p>You're not in any groups yet</p>
 }

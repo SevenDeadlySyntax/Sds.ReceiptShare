@@ -86,6 +86,11 @@ namespace Sds.ReceiptShare.Data.Repository
         {
             _context.SaveChanges();
         }
+
+        public virtual IEnumerable<GroupMember> GetGroups(string id)
+        {
+            return _context.Set<ApplicationUser>().Include("Groups").Include("Groups.Group").SingleOrDefault(s => s.Id == id)?.Groups;
+        }
     }
 }
     // Alternative implementation

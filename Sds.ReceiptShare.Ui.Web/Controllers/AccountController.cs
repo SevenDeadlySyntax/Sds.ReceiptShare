@@ -13,20 +13,21 @@ using Microsoft.Extensions.Options;
 using Sds.ReceiptShare.Domain.Entities;
 using Sds.ReceiptShare.Ui.Web.Models.AccountViewModels;
 using Sds.ReceiptShare.Ui.Web.Services;
+using Sds.ReceiptShare.Logic.Managers;
 
 namespace Sds.ReceiptShare.Ui.Web.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationUserManager _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
 
         public AccountController(
-            UserManager<ApplicationUser> userManager,
+            ApplicationUserManager userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
             ISmsSender smsSender,
@@ -122,7 +123,7 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
                     //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     _logger.LogInformation(3, "User created a new account with password.");
-                    return RedirectToLocal(returnUrl);
+                    return RedirectToAction("SetName", "Manage", new { ReturnUrl = returnUrl });
                 }
                 AddErrors(result);
             }
@@ -193,7 +194,7 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
                 ViewData["ReturnUrl"] = returnUrl;
                 ViewData["LoginProvider"] = info.LoginProvider;
                 var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-                return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
+                return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email, Name = email.Substring(0, email.IndexOf('@')) });
             }
         }
 
@@ -214,6 +215,7 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
                 }
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
                 var result = await _userManager.CreateAsync(user);
+
                 if (result.Succeeded)
                 {
                     result = await _userManager.AddLoginAsync(user, info);
@@ -221,6 +223,10 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
                         _logger.LogInformation(6, "User created an account using {Name} provider.", info.LoginProvider);
+
+                        user.Name = model.Name;
+                        var isNameSet = await _userManager.UpdateAsync(user);
+                        _logger.LogInformation($"Set name success: {isNameSet.ToString()}");
                         return RedirectToLocal(returnUrl);
                     }
                 }

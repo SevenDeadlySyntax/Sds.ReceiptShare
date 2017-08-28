@@ -55,7 +55,7 @@ namespace Sds.ReceiptShare.Ui.Web
 
             services.AddScoped<IRepository, Repository>();
             services.AddScoped<IGroupManager, GroupManager>();
-            services.AddScoped<IMemberManager, MemberManager>();
+            services.AddScoped<ApplicationUserManager>();
             services.AddMvc();
 
             // Add application services.

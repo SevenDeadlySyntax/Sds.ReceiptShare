@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Sds.ReceiptShare.Ui.Web.Models.ManageViewModels
+namespace Sds.ReceiptShare.Ui.Web.Models.Manage
 {
     public class ConfigureTwoFactorViewModel
     {

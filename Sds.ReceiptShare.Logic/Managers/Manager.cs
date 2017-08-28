@@ -4,11 +4,11 @@ namespace Sds.ReceiptShare.Logic.Managers
 {
     public abstract class Manager
     {
-        protected IRepository Repository;
+        protected readonly IRepository _repository;
 
         public Manager(IRepository repository)
         {
-            this.Repository = repository;
+            this._repository = repository;
         }
     }
 }

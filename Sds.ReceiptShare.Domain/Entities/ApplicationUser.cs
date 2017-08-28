@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 
 namespace Sds.ReceiptShare.Domain.Entities
 {
@@ -6,6 +7,9 @@ namespace Sds.ReceiptShare.Domain.Entities
     public class ApplicationUser : IdentityUser
     {
         //public int MemberId { get; set; }
-        public Member Member { get; set; }
+        //public Member Member { get; set; }
+        public string Name { get; set; }
+
+        public ICollection<GroupMember> Groups { get; set; }
     }
 }
