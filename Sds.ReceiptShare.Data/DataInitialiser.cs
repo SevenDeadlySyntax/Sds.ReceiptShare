@@ -10,13 +10,26 @@ namespace Sds.ReceiptShare.Data
     {
         public static void Initialize(DataContext context)
         {
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
+            //context.Database.EnsureDeleted();
+            //context.Database.EnsureCreated();
 
-            if (context.Users.Any())
+            if (context.Currencies.Any())
             {
                 return;   // DB has been seeded
             }
+
+            var primaryCurrency = new Currency() { Symbol = "£", Name = "Pound" };
+            var purchaseCurrencies = new List<Currency> {
+                new Currency() { Symbol = "€", Name = "Euro" },
+                new Currency() { Symbol = "$", Name = "US Dollar" },
+                new Currency() { Symbol = "AU$", Name = "Australian Dollar" },
+                new Currency() { Symbol = "₫", Name = "Vietnamese Dong" }
+            };
+
+            context.Currencies.Add(primaryCurrency);
+            context.Currencies.AddRange(purchaseCurrencies);
+            context.SaveChanges();
+
 
             //var member1 = new Member { Name = "Ed" };
             //var members = new List<Member>() {

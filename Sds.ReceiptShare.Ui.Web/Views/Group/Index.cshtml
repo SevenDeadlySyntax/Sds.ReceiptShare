@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Index";
 }
-<h2>Index</h2>
+<h2>@Model.Name</h2>
 <div>
     <h4>Group Details</h4>
     <hr />
@@ -39,11 +39,24 @@
                     </li>
                 }
             </ul>
+        <dt>
+            @Html.DisplayNameFor(model => model.Currencies)
+        </dt>
+        <dd>
+            <ul>
+                @foreach (var item in Model.Currencies)
+            {
+                    <li>
+                        @item.Symbol@item.Name &#64; @item.Rate to 1         
+                    </li>
+                }
+            </ul>
         </dd>
+
     </dl>
 </div>
 <div>
-    <a asp-action="AddMember"></a>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index" asp-controller="Home">Back to List</a>
+    <a asp-action="AddMembers" asp-route-id="@Model.Id">Manage Members</a><br />
+    <a asp-action="AddCurrencies" asp-route-id="@Model.Id">Manage Currencies</a><br />
+    <a asp-action="Index" asp-controller="Home">Home</a>
 </div>

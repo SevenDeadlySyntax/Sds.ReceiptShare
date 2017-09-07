@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Sds.ReceiptShare.Domain.Entities
 {
@@ -9,7 +7,7 @@ namespace Sds.ReceiptShare.Domain.Entities
         public string Description { get; set; }
         public double Amount { get; set; }
         public GroupCurrency Currency { get; set; }
-        public Member Purchaser { get; set; }
-        public IEnumerable<Member> Beneficiaries { get; set; }
+        public ApplicationUser Purchaser { get; set; }
+        public IEnumerable<ApplicationUser> Beneficiaries { get; set; }
     }
 }

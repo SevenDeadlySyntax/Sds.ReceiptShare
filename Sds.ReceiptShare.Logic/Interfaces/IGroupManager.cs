@@ -9,10 +9,11 @@ namespace Sds.ReceiptShare.Logic.Interfaces
         ICollection<Group> GetUserGroups(string userId); 
         Group GetDetails(int id);
         IEnumerable<GroupMember> GetMembers(int groupId);
+        List<GroupCurrency> GetCurencies(int id);
+        void AddMembers(int groupId, IEnumerable<GroupMember> groupMembers);
         Group Add(Group group);
-        void AddMembers(int groupId, IEnumerable<GroupMember> members);
+        void Update(Group group);
         void RemoveMember(int groupId, int groupMemberId);
-        void AddCurrency(int groupId, int currencyId);
-
+        void AddCurrencies(int groupId, IEnumerable<GroupCurrency> groupCurrencies);
     }
 }

@@ -15,6 +15,8 @@ namespace Sds.ReceiptShare.Data.Repository
         IQueryable<T> ReadActive<T>(params string[] linkedObjects) where T : DeletableEntity;
 
         T Insert<T>(T entity) where T : Entity;
+        T InsertManyToMany<T>(T entity) where T : JoiningEntity;
+
         T Update<T>(T entityToUpdate) where T : Entity;
         void Delete<T>(T entityToUpdate) where T : DeletableEntity;
 

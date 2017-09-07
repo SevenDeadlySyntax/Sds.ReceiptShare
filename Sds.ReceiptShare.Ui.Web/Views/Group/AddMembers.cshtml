@@ -1,0 +1,24 @@
+﻿@model Sds.ReceiptShare.Ui.Web.Models.Group.AddMembersViewModel
+@{
+    ViewData["Title"] = "Add members to the group";
+}
+
+<h2>Add Members</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddMembers">
+            @Html.TextAreaFor(model => model.EmailAddresses)
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to group</a>
+</div>
+

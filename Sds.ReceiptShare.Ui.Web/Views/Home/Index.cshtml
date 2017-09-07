@@ -1,4 +1,4 @@
-﻿@model HomeViewModel 
+﻿@model HomeViewModel
 @{
     ViewData["Title"] = $"{Model.UserName}'s groups";
 }
@@ -7,14 +7,17 @@
 
 <a asp-action="Create" asp-controller="Group">Create group</a>
 
+<h4>Groups you're in:</h4>
 @if (Model.Groups != null && Model.Groups.Any())
 {
     <p>You are currently in @Model.Groups.Count groups</p>
 
     foreach (var item in Model.Groups)
     {
-    <h3>@item.Name</h3>
+        <a asp-controller="Group" asp-route-id="@item.Id">@item.Name</a>
     }
-}else{
+}
+else
+{
     <p>You're not in any groups yet</p>
 }

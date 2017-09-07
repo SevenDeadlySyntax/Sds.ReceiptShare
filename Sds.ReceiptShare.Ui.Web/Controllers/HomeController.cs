@@ -23,7 +23,6 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         {
             _groupManager = groupManager;
             _userManager = userManager;
-
         }
 
         // An aothorized user will be shown their list of groups
@@ -44,7 +43,7 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
             var homeViewModel = new HomeViewModel()
             {
                 UserName = user.Name,
-                Groups = groups?.Select(s => new GroupListItem() { Name = s.Member.Name, NumberOfMembers = s.Group.Members.Count }).ToList()
+                Groups = groups?.Select(s => new GroupListItem() { Name = s.Group.Name, NumberOfMembers = s.Group.Members.Count, Id = s.Group.Id }).ToList()
             };
 
             return View(homeViewModel);

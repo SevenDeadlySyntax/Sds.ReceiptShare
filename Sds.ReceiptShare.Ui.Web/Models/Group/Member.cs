@@ -1,6 +1,6 @@
 ﻿namespace Sds.ReceiptShare.Ui.Web.Models.Group
 {
-    public class GroupMember
+    public class Member
     {
         public string UserId { get; set; }
         public string Name { get; set; }

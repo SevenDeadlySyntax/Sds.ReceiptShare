@@ -10,5 +10,6 @@ namespace Sds.ReceiptShare.Ui.Web.Models.Home
         public string Name { get; set; }
         public int NumberOfMembers { get; set; }
         public DateTime Updated { get; set; }
+        public int Id { get; internal set; }
     }
 }

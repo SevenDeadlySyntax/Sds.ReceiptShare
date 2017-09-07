@@ -22,14 +22,30 @@ namespace Sds.ReceiptShare.Logic.Managers
             return group;
         }
 
-        public void AddCurrency(int groupId, int currencyId)
+        public void AddCurrencies(int groupId, IEnumerable<GroupCurrency> groupCurrencies)
         {
-            throw new NotImplementedException();
+            foreach (var item in groupCurrencies)
+            {
+                _repository.InsertManyToMany<GroupCurrency>(item);
+            }
+
+            _repository.Save();
         }
 
-        public void AddMembers(int groupId, IEnumerable<GroupMember> members)
+        public void Update(Group group)
         {
-            throw new NotImplementedException();
+            _repository.Update<Group>(group);
+            _repository.Save();
+        }
+
+        public void AddMembers(int groupId, IEnumerable<GroupMember> groupMembers)
+        {
+            foreach (var item in groupMembers)
+            {
+                _repository.InsertManyToMany<GroupMember>(item);
+            }
+
+            _repository.Save();
         }
 
         /// <summary>
@@ -50,6 +66,11 @@ namespace Sds.ReceiptShare.Logic.Managers
         public Group GetDetails(int id)
         {
             return _repository.Read<Group>(id, "Members", "PrimaryCurrency", "GroupCurrencies", "GroupCurrencies.Currency");
+        }
+
+        public List<GroupCurrency> GetCurencies(int id)
+        {
+            return _repository.Read<Group>(id, "PrimaryCurrency", "GroupCurrencies", "GroupCurrencies.Currency").GroupCurrencies.ToList();
         }
 
         public void RemoveMember(int groupId, int groupMemberId)
