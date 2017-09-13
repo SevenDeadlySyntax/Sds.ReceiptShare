@@ -6,8 +6,8 @@ namespace Sds.ReceiptShare.Ui.Web.Models.Group
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Currency { get; set; }
+        public Currency Currency { get; set; }
         public double Value { get; set; }
-        public string PurchasedBy { get; set; }
+        public Member PurchasedBy { get; set; }
     }
 }

@@ -25,7 +25,7 @@ namespace Sds.ReceiptShare.Data.Repository
 
         public virtual T Read<T>(int id, params string[] linkedObjects) where T : Entity
         {
-            return Read<T>(linkedObjects).SingleOrDefault(s => s.Id == id);
+            return Read<T>(linkedObjects).AsNoTracking().SingleOrDefault(s => s.Id == id);
         }
 
         public virtual IQueryable<T> ReadActive<T>(params string[] linkedObjects) where T : DeletableEntity
@@ -35,8 +35,8 @@ namespace Sds.ReceiptShare.Data.Repository
 
         public virtual IQueryable<T> Read<T>(params string[] linkedObjects) where T : Entity
         {
-            var query = this.Read<T>().AsQueryable<T>();
-            return linkedObjects.Where(objectType => objectType != string.Empty).Aggregate(query, (current, objectType) => current.Include(objectType));
+            var query = this.Read<T>();
+            return linkedObjects.Where(objectType => objectType != string.Empty).Aggregate(query, (current, objectType) => current.Include(objectType)).AsNoTracking();
         }
 
         public virtual IQueryable<T> Read<T>(Expression<Func<T, bool>> query, params string[] linkedObjects) where T : Entity
@@ -70,8 +70,18 @@ namespace Sds.ReceiptShare.Data.Repository
 
         public virtual T Update<T>(T entityToUpdate) where T : Entity
         {
+            return UpdateAny<T>(entityToUpdate);
+        }
+
+        public virtual T UpdateManyToMany<T>(T entityToUpdate) where T : JoiningEntity
+        {
+            return UpdateAny<T>(entityToUpdate);
+        }
+
+        private T UpdateAny<T>(T entityToUpdate) where T : class
+        {
             var entities = _context.Set<T>();
-            entities.Attach(entityToUpdate);
+            entities.Update(entityToUpdate);
             _context.Entry(entityToUpdate).State = EntityState.Modified;
             return entityToUpdate;
         }
@@ -82,9 +92,22 @@ namespace Sds.ReceiptShare.Data.Repository
             this.Update<T>(entityToDelete);
         }
 
+        public virtual T DeleteManyToMany<T>(T entity) where T : JoiningEntity
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException($"Entity {entity.GetType()}");
+            }
+
+            var entities = _context.Set<T>();
+            var newEntity = entities.Remove(entity);
+            return newEntity.Entity;
+        }
+
         public void Save()
         {
-            _context.SaveChanges();
+            _context.SaveChanges();           
+            
         }
 
         public virtual IEnumerable<GroupMember> GetGroups(string id)

@@ -45,9 +45,15 @@
         <dd>
             <ul>
                 @foreach (var item in Model.Currencies)
-            {
+                {
                     <li>
-                        @item.Symbol@item.Name &#64; @item.Rate to 1         
+                        @item.Symbol@item.Name &#64; @item.Rate to 1
+                        @if (item.IsPrimary)
+                        {
+                            <span class="label-info">
+                                primary
+                            </span>
+                        }
                     </li>
                 }
             </ul>

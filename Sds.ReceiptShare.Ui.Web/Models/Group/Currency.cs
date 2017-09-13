@@ -8,5 +8,6 @@ namespace Sds.ReceiptShare.Ui.Web.Models.Group
         public string Name { get; set; }
         public string Symbol { get; set; }
         public double Rate { get; internal set; }
+        public bool IsPrimary { get; internal set; }
     }
 }

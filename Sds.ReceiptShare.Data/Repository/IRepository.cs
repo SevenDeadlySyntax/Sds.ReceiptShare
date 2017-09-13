@@ -18,7 +18,10 @@ namespace Sds.ReceiptShare.Data.Repository
         T InsertManyToMany<T>(T entity) where T : JoiningEntity;
 
         T Update<T>(T entityToUpdate) where T : Entity;
+        T UpdateManyToMany<T>(T entityToUpdate) where T : JoiningEntity;
+
         void Delete<T>(T entityToUpdate) where T : DeletableEntity;
+        T DeleteManyToMany<T>(T entity) where T : JoiningEntity;
 
         IEnumerable<GroupMember> GetGroups(string id);
         void Save();

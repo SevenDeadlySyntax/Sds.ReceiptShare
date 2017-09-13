@@ -22,13 +22,41 @@ namespace Sds.ReceiptShare.Logic.Managers
             return group;
         }
 
-        public void AddCurrencies(int groupId, IEnumerable<GroupCurrency> groupCurrencies)
+        public void UpdateCurrencies(int id, IEnumerable<GroupCurrency> groupCurrencies)
         {
-            foreach (var item in groupCurrencies)
+            var existingCurrencies = _repository.Read<Group>(id, "PrimaryCurrency", "GroupCurrencies", "GroupCurrencies.Currency").GroupCurrencies.ToList();
+            var entitiesToAdd = groupCurrencies.Where(s => !existingCurrencies.Select(x => x.CurrencyId).Contains(s.CurrencyId)).ToList();
+            var entitiesToRemove = existingCurrencies.Where(s => !groupCurrencies.Select(x => x.CurrencyId).Contains(s.CurrencyId));
+
+            // Add all the passed in items that don't already exist
+            if (entitiesToAdd.Any())
             {
-                _repository.InsertManyToMany<GroupCurrency>(item);
+                foreach (var item in entitiesToAdd)
+                {
+                    _repository.InsertManyToMany<GroupCurrency>(item);
+                }
+                _repository.Save();
             }
 
+            // Remove any that are not in the list 
+            if (entitiesToRemove.Any())
+            {
+                foreach (var item in entitiesToRemove)
+                {
+                    // TODO: don't remove them if they are associated with purchases
+                    _repository.DeleteManyToMany<GroupCurrency>(item);
+                }
+                _repository.Save();
+            }
+
+            // Update any chnages to the rate
+            foreach (var item in groupCurrencies)
+            {
+                if (existingCurrencies.Any(s => s.CurrencyId == item.CurrencyId && s.ConvertionRate != item.ConvertionRate))
+                {
+                    _repository.UpdateManyToMany<GroupCurrency>(item);
+                }
+            }
             _repository.Save();
         }
 
@@ -68,9 +96,9 @@ namespace Sds.ReceiptShare.Logic.Managers
             return _repository.Read<Group>(id, "Members", "PrimaryCurrency", "GroupCurrencies", "GroupCurrencies.Currency");
         }
 
-        public List<GroupCurrency> GetCurencies(int id)
+        public List<GroupCurrency> GetCurencies(int id, bool excludePrimary = false)
         {
-            return _repository.Read<Group>(id, "PrimaryCurrency", "GroupCurrencies", "GroupCurrencies.Currency").GroupCurrencies.ToList();
+            return _repository.Read<Group>(id, "PrimaryCurrency", "GroupCurrencies", "GroupCurrencies.Currency").GroupCurrencies.Where(s => !excludePrimary || s.CurrencyId != s.Group.PrimaryCurrency.Id).ToList();
         }
 
         public void RemoveMember(int groupId, int groupMemberId)
