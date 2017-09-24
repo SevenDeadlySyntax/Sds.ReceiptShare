@@ -1,0 +1,55 @@
+﻿@model Sds.ReceiptShare.Ui.Web.Models.Group.AddPurchaseViewModel
+@{
+    ViewData["Title"] = "AddPurchase";
+}
+<h2>AddPurchase</h2>
+<h4>AddPurchaseViewModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddPurchase">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Value" class="control-label"></label>
+                <input asp-for="Value" class="form-control" />
+                <span asp-validation-for="Value" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Currency" class="control-label"></label>
+                <select asp-for="Currency" asp-items="Model.Currencies" class="form-control"></select>
+                <span asp-validation-for="Currency" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Purchaser" class="control-label"></label>
+                <select asp-for="Purchaser" asp-items="Model.Members" class="form-control"></select>
+                <span asp-validation-for="Purchaser" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                @if (@Model.Beneficiaries != null && @Model.Beneficiaries.Items.Count() > 0)
+                {
+                    for (int i = 0; i < @Model.Beneficiaries.Items.Count(); i++)
+                    {
+                        <div>
+                            <input asp-for="@Model.Beneficiaries.Items[i].IsChecked" type="checkbox" />
+                            <label asp-for="@Model.Beneficiaries.Items[i].IsChecked">@Model.Beneficiaries.Items[i].Text</label>
+                            @*If these are not included, all OptionIds become 0 and all OptionName becomes null*@
+                            @Html.HiddenFor(x => @Model.Beneficiaries.Items[i].Value)
+                            @Html.HiddenFor(y => @Model.Beneficiaries.Items[i].Text)
+                        </div>
+                    }
+                }
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

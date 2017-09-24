@@ -51,6 +51,7 @@ namespace Sds.ReceiptShare.Data.Repository
                 throw new ArgumentNullException($"Entity {entity.GetType()}");
             }
 
+            entity.Created = DateTime.Now;
             var entities = _context.Set<T>();
             var newEntity = entities.Add(entity);
             return newEntity.Entity;
@@ -70,6 +71,7 @@ namespace Sds.ReceiptShare.Data.Repository
 
         public virtual T Update<T>(T entityToUpdate) where T : Entity
         {
+            entityToUpdate.Updated = DateTime.Now;
             return UpdateAny<T>(entityToUpdate);
         }
 
@@ -80,7 +82,7 @@ namespace Sds.ReceiptShare.Data.Repository
 
         private T UpdateAny<T>(T entityToUpdate) where T : class
         {
-            var entities = _context.Set<T>();
+            var entities = _context.Set<T>();            
             entities.Update(entityToUpdate);
             _context.Entry(entityToUpdate).State = EntityState.Modified;
             return entityToUpdate;
@@ -88,6 +90,7 @@ namespace Sds.ReceiptShare.Data.Repository
 
         public void Delete<T>(T entityToDelete) where T : DeletableEntity
         {
+            entityToDelete.Deleted = DateTime.Now;
             entityToDelete.IsDeleted = true;
             this.Update<T>(entityToDelete);
         }
@@ -98,7 +101,7 @@ namespace Sds.ReceiptShare.Data.Repository
             {
                 throw new ArgumentNullException($"Entity {entity.GetType()}");
             }
-
+            
             var entities = _context.Set<T>();
             var newEntity = entities.Remove(entity);
             return newEntity.Entity;

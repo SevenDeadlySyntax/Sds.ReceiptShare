@@ -115,5 +115,33 @@ namespace Sds.ReceiptShare.Logic.Managers
         {
             return _repository.ReadActive<Group>("Members").Where(s => s.Members.Select(x => x.MemberId).Contains(memberId)).ToList();
         }
+
+        public Purchase GetPurchase(int id, int purchaseId)
+        {
+            var purchase = _repository.Read<Purchase>(purchaseId, "Currency", "Beneficiaries");
+
+            // TODO: Ensure that this purchase in in the group for the ID provided (add group to the entity and return it as a linked object)
+
+            return purchase;
+        }
+
+        public Purchase AddPurchase(Purchase purchase)
+        {
+            _repository.Insert(purchase);
+            _repository.Save();
+            return purchase;
+        }
+
+        public Purchase UpdatePurchase(Purchase purchase)
+        {
+            _repository.Update(purchase);
+            _repository.Save();
+            return purchase;
+        }
+
+        public IEnumerable<Purchase> GetPurchases(int id)
+        {
+            return _repository.Read<Group>(id, "Purchases", "Purchases.Purchaser", "Purchases.Beneficiaries", "Purchases.Beneficiaries.Member", "Purchases.Currency").Purchases;
+        }
     }
 }

@@ -28,6 +28,7 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         {
             var group = _groupManager.GetDetails(id);
             var members = _groupManager.GetMembers(id);
+            var purchases = _groupManager.GetPurchases(id);
             var currencies = _groupManager.GetCurencies(id, true);
             var model = new DetailsViewModel()
             {
@@ -35,7 +36,26 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
                 Name = group.Name,
                 CreatedOn = group.Created,
                 Members = members?.Select(s => new Member { Name = s.Member.Name, UserId = s.Member.Id, IsAdministrator = s.IsAdministrator }).ToList(),
-                Currencies = new List<Currency> { new Currency { Id = group.PrimaryCurrency.Id, Name = group.PrimaryCurrency.Name, Symbol = group.PrimaryCurrency.Symbol, Rate = 1, IsPrimary = true } }
+                Currencies = new List<Currency>
+                {
+                    new Currency
+                    {
+                        Id = group.PrimaryCurrency.Id,
+                        Name = group.PrimaryCurrency.Name,
+                        Symbol = group.PrimaryCurrency.Symbol,
+                        Rate = 1,
+                        IsPrimary = true
+                    }
+                },
+                Purchases = purchases.Select(s => new Purchase
+                {
+                    Name = s.Description,
+                    Value = s.Amount,
+                    PurchasedBy = s.Purchaser.Name,
+                    Id = s.Id,
+                    Date = s.Created,
+                    Currency = new Currency { Name = s.Currency.Name, Symbol = s.Currency.Symbol }
+                }).OrderByDescending(s => s.Date).ToList()
             };
 
             currencies?.ForEach(s => model.Currencies.Add(new Currency { Id = s.CurrencyId, Name = s.Currency.Name, Symbol = s.Currency.Symbol, Rate = s.ConvertionRate }));
@@ -64,7 +84,7 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
                 Created = DateTime.UtcNow,
                 Name = model.Name,
                 Members = new List<Domain.Entities.GroupMember> { new Domain.Entities.GroupMember() { IsAdministrator = true, Member = user } },
-                PrimaryCurrency = primaryCurrency,
+                PrimaryCurrencyId = primaryCurrency.Id,
                 GroupCurrencies = new List<Domain.Entities.GroupCurrency> { new Domain.Entities.GroupCurrency { CurrencyId = primaryCurrency.Id, ConvertionRate = 1 } }
             };
 
@@ -144,5 +164,49 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
             return RedirectToAction("Index", new { id = id });
         }
 
+        [HttpGet]
+        public IActionResult AddPurchase(int id)
+        {
+            var members = _groupManager.GetMembers(id);
+            var currencies = _groupManager.GetCurencies(id);
+            var model = new AddPurchaseViewModel()
+            {
+                Beneficiaries = new CheckboxList
+                {
+                    Items = members.Select(s => new CheckboxListItem { Value = s.MemberId, Text = s.Member.Name }).ToList()
+                },
+                Currencies = currencies.Select(s => new SelectListItem { Text = s.Currency.Name, Value = s.CurrencyId.ToString() }),
+                Members = members.Select(s => new SelectListItem { Value = s.MemberId, Text = s.Member.Name })
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult AddPurchase(int id, AddPurchaseViewModel model)
+        {
+            var purchase = new Domain.Entities.Purchase
+            {
+                Amount = model.Value,
+                Description = model.Name,
+                PurchaserId = model.Purchaser,
+                CurrencyId = model.Currency,
+                GroupId = id,
+                Beneficiaries = model.Beneficiaries.Items.Where(i => i.IsChecked).Select(i => new Domain.Entities.PurchaseBeneficiary { MemberId = i.Value }).ToList()
+            };
+
+            _groupManager.AddPurchase(purchase);
+
+            return RedirectToAction("Index", new { id = id });
+        }
+
+
+        [HttpGet]
+        public IActionResult EditPurchase(int id, int purchaseId)
+        {
+            var model = new { };
+
+            return View(model);
+        }
     }
 }

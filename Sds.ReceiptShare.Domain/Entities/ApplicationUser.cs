@@ -11,5 +11,7 @@ namespace Sds.ReceiptShare.Domain.Entities
         public string Name { get; set; }
 
         public ICollection<GroupMember> Groups { get; set; }
+        public ICollection<PurchaseBeneficiary> BeneficiaryOf { get; set; }
+        public ICollection<Purchase> Purchases { get; set; }
     }
 }

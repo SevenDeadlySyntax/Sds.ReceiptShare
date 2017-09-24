@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Sds.ReceiptShare.Core.ApplicationSettings;
 using Sds.ReceiptShare.Data;
 using Sds.ReceiptShare.Data.Repository;
 using Sds.ReceiptShare.Domain.Entities;
@@ -62,6 +63,8 @@ namespace Sds.ReceiptShare.Ui.Web
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            services.Configure<StartupSettings>(Configuration.GetSection("Startup"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,7 +72,10 @@ namespace Sds.ReceiptShare.Ui.Web
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-            DataInitialiser.Initialize(context);
+
+            var recreateDatabase = Configuration.GetSection("Startup").GetValue<bool>("RecreateDatabase");
+
+            DataInitialiser.Initialize(context, recreateDatabase);
 
             if (env.IsDevelopment())
             {

@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Sds.ReceiptShare.Core\Sds.ReceiptShare.Core.csproj" />
     <ProjectReference Include="..\Sds.ReceiptShare.Domain\Sds.ReceiptShare.Domain.csproj" />
   </ItemGroup>
 

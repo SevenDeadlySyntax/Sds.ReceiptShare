@@ -31,6 +31,11 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         {
             // Get the authenticated user
             var user = _userManager.GetUserAsync(HttpContext.User).Result;
+            if (user == null)
+            {
+                HttpContext.User = null;
+                return RedirectToAction("Login", "Account");
+            }
 
             if (string.IsNullOrEmpty(user.UserName))
             {

@@ -1,17 +1,22 @@
-﻿using Sds.ReceiptShare.Domain.Entities;
+﻿using Microsoft.Extensions.Options;
+using Sds.ReceiptShare.Core.ApplicationSettings;
+using Sds.ReceiptShare.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Sds.ReceiptShare.Data
 {
+
     public class DataInitialiser
     {
-        public static void Initialize(DataContext context)
+        public static void Initialize(DataContext context, bool recreateDatabase)
         {
-            //context.Database.EnsureDeleted();
-            //context.Database.EnsureCreated();
+            if (recreateDatabase)
+            {
+                context.Database.EnsureDeleted();
+                context.Database.EnsureCreated();
+            }
 
             if (context.Currencies.Any())
             {
@@ -29,7 +34,6 @@ namespace Sds.ReceiptShare.Data
             context.Currencies.Add(primaryCurrency);
             context.Currencies.AddRange(purchaseCurrencies);
             context.SaveChanges();
-
 
             //var member1 = new Member { Name = "Ed" };
             //var members = new List<Member>() {

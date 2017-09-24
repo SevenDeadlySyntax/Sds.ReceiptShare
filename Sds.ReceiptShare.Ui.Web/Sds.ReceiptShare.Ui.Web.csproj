@@ -48,6 +48,7 @@
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Sds.ReceiptShare.Core\Sds.ReceiptShare.Core.csproj" />
     <ProjectReference Include="..\Sds.ReceiptShare.Data\Sds.ReceiptShare.Data.csproj" />
     <ProjectReference Include="..\Sds.ReceiptShare.Domain\Sds.ReceiptShare.Domain.csproj" />
     <ProjectReference Include="..\Sds.ReceiptShare.Logic\Sds.ReceiptShare.Logic.csproj" />

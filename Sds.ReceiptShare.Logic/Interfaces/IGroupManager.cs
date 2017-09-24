@@ -15,5 +15,10 @@ namespace Sds.ReceiptShare.Logic.Interfaces
         void Update(Group group);
         void RemoveMember(int id, int groupMemberId);
         void UpdateCurrencies(int id, IEnumerable<GroupCurrency> groupCurrencies);
+
+        Purchase GetPurchase(int id, int purchaseId);
+        Purchase AddPurchase(Purchase purchase);
+        Purchase UpdatePurchase(Purchase purchase);
+        IEnumerable<Purchase> GetPurchases(int id);
     }
 }
