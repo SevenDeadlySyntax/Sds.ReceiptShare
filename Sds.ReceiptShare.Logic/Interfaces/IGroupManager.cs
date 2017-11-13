@@ -1,24 +1,30 @@
-﻿using Sds.ReceiptShare.Domain.Entities;
+﻿using Sds.ReceiptShare.Logic.Models;
+using Sds.ReceiptShare.Logic.Models.Group;
+using Sds.ReceiptShare.Logic.Models.Member;
+using Sds.ReceiptShare.Logic.Models.Purchase;
 using System.Collections.Generic;
 
 namespace Sds.ReceiptShare.Logic.Interfaces
 {
     public interface IGroupManager
     {
-        Group Get(int id);
-        ICollection<Group> GetUserGroups(string userId); 
-        Group GetDetails(int id);
-        IEnumerable<GroupMember> GetMembers(int groupId);
-        List<GroupCurrency> GetCurencies(int id, bool excludePrimary = false);
-        void AddMembers(int groupId, IEnumerable<GroupMember> groupMembers);
-        Group Add(Group group);
-        void Update(Group group);
-        void RemoveMember(int id, int groupMemberId);
-        void UpdateCurrencies(int id, IEnumerable<GroupCurrency> groupCurrencies);
+        GroupBasicDetails Get(int id);
+        GroupDetails GetDetails(int id);
+        ICollection<GroupBasicDetails> GetUserGroups(string userId); 
 
-        Purchase GetPurchase(int id, int purchaseId);
-        Purchase AddPurchase(Purchase purchase);
-        Purchase UpdatePurchase(Purchase purchase);
-        IEnumerable<Purchase> GetPurchases(int id);
+        GroupAdd Add(GroupAdd group);
+        void Update(GroupDetails group);
+
+        IEnumerable<MemberDetails> GetMembers(int groupId);
+        void RemoveMember(int id, int groupMemberId);
+        void AddMembers(int groupId, IEnumerable<string> groupMembers);
+
+        List<Currency> GetCurencies(int id, bool excludePrimary = false);
+        void UpdateCurrencies(int id, IEnumerable<Currency> groupCurrencies);
+
+        PurchaseDetails GetPurchase(int id, int purchaseId);
+        void AddPurchase(PurchaseAddUpdate purchase);
+        void UpdatePurchase(PurchaseAddUpdate purchase);
+        IEnumerable<PurchaseDetails> GetPurchases(int id);
     }
 }

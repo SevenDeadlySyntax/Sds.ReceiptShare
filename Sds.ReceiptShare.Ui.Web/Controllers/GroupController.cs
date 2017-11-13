@@ -116,7 +116,7 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
                     var createdUser = _userManager.CreateAsync(user);
                 }
 
-                groupMembers.Add(new Domain.Entities.GroupMember { GroupId = id, Member = user });
+                groupMembers.Add(new Domain.Entities.GroupMember { GroupId = id, MemberId = user.Id });
             }
 
             _groupManager.AddMembers(id, groupMembers);
