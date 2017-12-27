@@ -30,7 +30,7 @@ namespace Sds.ReceiptShare.Logic.Managers
         public GroupBasicDetails Get(int id)
         {
             var entity = _repository.Read<Entities.Group>(id);
-            return GroupMapper.MapGroupBasicDetailsFromEntity(entity);
+            return GroupMapper.MapGroupBasicDetailsFromEntity<GroupBasicDetails>(entity);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Sds.ReceiptShare.Logic.Managers
         /// <returns>Matched group or null</returns>
         public GroupDetails GetDetails(int id)
         {
-            var entity = _repository.Read<Entities.Group>(id, "Members", "PrimaryCurrency", "GroupCurrencies", "GroupCurrencies.Currency");
+            var entity = _repository.Read<Entities.Group>(id, "Members", "Members.Member", "PrimaryCurrency", "GroupCurrencies", "GroupCurrencies.Currency");
             return GroupMapper.MapGroupDetailsFromEntity(entity);
         }
         
@@ -48,7 +48,7 @@ namespace Sds.ReceiptShare.Logic.Managers
         public ICollection<GroupBasicDetails> GetUserGroups(string memberId)
         {
             var entities = _repository.ReadActive<Entities.Group>("Members").Where(s => s.Members.Select(x => x.MemberId).Contains(memberId));
-            return entities.Select(s => GroupMapper.MapGroupBasicDetailsFromEntity(s)).ToList();
+            return entities.Select(s => GroupMapper.MapGroupBasicDetailsFromEntity<GroupBasicDetails>(s)).ToList();
         }
 
         /// <summary>
@@ -181,7 +181,8 @@ namespace Sds.ReceiptShare.Logic.Managers
 
         public void AddPurchase(PurchaseAddUpdate purchase)
         {
-            _repository.Insert(PurchaseMapper.MapPurchaseAddUpdateToEntity(purchase));
+            var entity = PurchaseMapper.MapPurchaseAddUpdateToEntity(purchase);
+            _repository.Insert(entity);
             _repository.Save();
         }
 

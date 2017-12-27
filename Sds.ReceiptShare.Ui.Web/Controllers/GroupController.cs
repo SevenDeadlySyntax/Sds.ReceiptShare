@@ -153,6 +153,7 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         {
             var members = _groupManager.GetMembers(id);
             var currencies = _groupManager.GetCurencies(id);
+
             var model = new AddPurchaseViewModel()
             {
                 Beneficiaries = new CheckboxList
