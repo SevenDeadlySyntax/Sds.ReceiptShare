@@ -7,9 +7,9 @@ namespace Sds.ReceiptShare.Logic.Mappers
 {
     internal static class GroupMapper
     {
-        internal static GroupBasicDetails MapGroupBasicDetailsFromEntity(Entities.Group entity)
+        internal static T MapGroupBasicDetailsFromEntity<T>(Entities.Group entity) where T : GroupBasicDetails
         {
-            return new GroupBasicDetails()
+            return (T)new GroupBasicDetails
             {
                 Created = entity.Created,
                 Name = entity.Name,
@@ -19,7 +19,7 @@ namespace Sds.ReceiptShare.Logic.Mappers
 
         internal static GroupDetails MapGroupDetailsFromEntity(Entities.Group entity)
         {
-            var details = (GroupDetails)MapGroupDetailsFromEntity(entity);
+            var details = (GroupDetails)MapGroupBasicDetailsFromEntity<GroupDetails>(entity);
 
             details.Members = entity.Members.Select(s => MemberMapper.MapMemberDetailsFromEntity(s)).ToList();
             details.PrimaryCurrency = CurrencyMapper.MapCurrencyFromEntity(entity.PrimaryCurrency);

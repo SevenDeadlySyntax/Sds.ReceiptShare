@@ -7,6 +7,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Sds.ReceiptShare.Logic.Models.Group;
+using Sds.ReceiptShare.Logic.Models;
 
 namespace Sds.ReceiptShare.Ui.Web.Controllers
 {
@@ -35,7 +37,7 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
                 Id = group.Id,
                 Name = group.Name,
                 CreatedOn = group.Created,
-                Members = members?.Select(s => new Member { Name = s.Member.Name, UserId = s.Member.Id, IsAdministrator = s.IsAdministrator }).ToList(),
+                Members = members?.Select(s => new Member { Name = s.Name, UserId = s.Id, IsAdministrator = s.IsAdministrator }).ToList(),
                 Currencies = new List<Currency>
                 {
                     new Currency
@@ -51,21 +53,21 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
                 {
                     Name = s.Description,
                     Value = s.Amount,
-                    PurchasedBy = s.Purchaser.Name,
+                    PurchasedBy = s.PurchaserName,
                     Id = s.Id,
-                    Date = s.Created,
+                    Date = s.Date,
                     Currency = new Currency { Name = s.Currency.Name, Symbol = s.Currency.Symbol }
                 }).OrderByDescending(s => s.Date).ToList()
             };
 
-            currencies?.ForEach(s => model.Currencies.Add(new Currency { Id = s.CurrencyId, Name = s.Currency.Name, Symbol = s.Currency.Symbol, Rate = s.ConvertionRate }));
+            currencies?.ForEach(s => model.Currencies.Add(new Currency { Id = s.Id, Name = s.Name, Symbol = s.Symbol, Rate = s.Rate}));
 
             return View(model);
         }
 
         public IActionResult Create()
         {
-            var currencies = _lookupManager.GetAll<Domain.Entities.Currency>();
+            var currencies = _lookupManager.GetAllCurrencies();
 
             return View(new CreateViewModel()
             {
@@ -77,19 +79,17 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         public IActionResult Create(CreateViewModel model)
         {
             var user = _userManager.GetUserAsync(HttpContext.User).Result;
-            var primaryCurrency = _lookupManager.Get<Domain.Entities.Currency>(model.PrimaryCurrency);
+            var primaryCurrencyId = model.PrimaryCurrency;
 
-            var group = new Domain.Entities.Group()
+            var group = new GroupAdd()
             {
-                Created = DateTime.UtcNow,
                 Name = model.Name,
-                Members = new List<Domain.Entities.GroupMember> { new Domain.Entities.GroupMember() { IsAdministrator = true, Member = user } },
-                PrimaryCurrencyId = primaryCurrency.Id,
-                GroupCurrencies = new List<Domain.Entities.GroupCurrency> { new Domain.Entities.GroupCurrency { CurrencyId = primaryCurrency.Id, ConvertionRate = 1 } }
+                CreatorId = user.Id,
+                PrimaryCurrencyId = primaryCurrencyId
             };
 
-            _groupManager.Add(group);
-            return RedirectToAction("Index", new { id = group.Id });
+            var id = _groupManager.Add(group);
+            return RedirectToAction("Index", new { id = id });
         }
 
         [HttpGet]
@@ -103,40 +103,25 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
 
         [HttpPost()]
         public IActionResult AddMembers(int id, AddMembersViewModel model)
-        {
-            //var group = _groupManager.Get(id);
-            var groupMembers = new List<Domain.Entities.GroupMember>();
-
-            foreach (var item in model.EmailAddresses.Split(","))
-            {
-                var user = _userManager.FindByEmailAsync(item).Result;
-                if (user == null)
-                {
-                    user = new Domain.Entities.ApplicationUser { UserName = item, Name = item, Email = item };
-                    var createdUser = _userManager.CreateAsync(user);
-                }
-
-                groupMembers.Add(new Domain.Entities.GroupMember { GroupId = id, MemberId = user.Id });
-            }
-
-            _groupManager.AddMembers(id, groupMembers);
+        {  
+            _groupManager.AddMembers(id, model.EmailAddresses.Split(",").ToList());
             return RedirectToAction("Index", new { id = id });
         }
 
         [HttpGet]
         public IActionResult AddCurrencies(int id)
         {
-            var currencies = _lookupManager.GetAll<Domain.Entities.Currency>();
+            var currencies = _lookupManager.GetAllCurrencies();
             var selectedCurrencies = _groupManager.GetCurencies(id);
             var checkboxList = new List<CurrencyCheckboxListItem>();
 
             foreach (var item in currencies)
             {
-                var selectedCurrency = selectedCurrencies.SingleOrDefault(s => s.CurrencyId == item.Id);
+                var selectedCurrency = selectedCurrencies.SingleOrDefault(s => s.Id == item.Id);
                 checkboxList.Add(new CurrencyCheckboxListItem()
                 {
                     Checked = selectedCurrency != null,
-                    Rate = selectedCurrency?.ConvertionRate ?? 0,
+                    Rate = selectedCurrency?.Rate ?? 0,
                     Currency = new Currency { Id = item.Id, Name = item.Name, Symbol = item.Symbol, }
                 });
             }
@@ -153,12 +138,11 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         [HttpPost()]
         public IActionResult AddCurrencies(int id, AddCurrenciesViewModel model)
         {
-            _groupManager.UpdateCurrencies(id, model.CurrencyCheckboxList.Where(S => S.Checked).Select(s =>
-                 new Domain.Entities.GroupCurrency()
+            _groupManager.UpdateCurrencies(id, model.CurrencyCheckboxList.Where(s => s.Checked).Select(s =>
+                 new GroupCurrency()
                  {
-                     CurrencyId = s.Currency.Id,
-                     GroupId = id,
-                     ConvertionRate = s.Rate
+                     Id = s.Currency.Id,
+                     Rate = s.Rate
                  }));
 
             return RedirectToAction("Index", new { id = id });
@@ -173,10 +157,10 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
             {
                 Beneficiaries = new CheckboxList
                 {
-                    Items = members.Select(s => new CheckboxListItem { Value = s.MemberId, Text = s.Member.Name }).ToList()
+                    Items = members.Select(s => new CheckboxListItem { Value = s.Id, Text = s.Name }).ToList()
                 },
-                Currencies = currencies.Select(s => new SelectListItem { Text = s.Currency.Name, Value = s.CurrencyId.ToString() }),
-                Members = members.Select(s => new SelectListItem { Value = s.MemberId, Text = s.Member.Name })
+                Currencies = currencies.Select(s => new SelectListItem { Text = s.Name, Value = s.Id.ToString() }),
+                Members = members.Select(s => new SelectListItem { Value = s.Id, Text = s.Name })
             };
 
             return View(model);
@@ -185,14 +169,14 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         [HttpPost]
         public IActionResult AddPurchase(int id, AddPurchaseViewModel model)
         {
-            var purchase = new Domain.Entities.Purchase
+            var purchase = new Logic.Models.Purchase.PurchaseAddUpdate
             {
                 Amount = model.Value,
                 Description = model.Name,
                 PurchaserId = model.Purchaser,
                 CurrencyId = model.Currency,
                 GroupId = id,
-                Beneficiaries = model.Beneficiaries.Items.Where(i => i.IsChecked).Select(i => new Domain.Entities.PurchaseBeneficiary { MemberId = i.Value }).ToList()
+                Beneficiaries = model.Beneficiaries.Items.Where(s => s.IsChecked).Select(s => s.Value).ToList()
             };
 
             _groupManager.AddPurchase(purchase);

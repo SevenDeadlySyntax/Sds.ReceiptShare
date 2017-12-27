@@ -11,5 +11,6 @@ namespace Sds.ReceiptShare.Logic.Models.Member
         public string Email { get; set; }
         public string Name { get; set; }
         public string ImageUrl { get; set; }
+        public bool IsAdministrator { get; internal set; }
     }
 }

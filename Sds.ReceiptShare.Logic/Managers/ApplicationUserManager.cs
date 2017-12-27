@@ -12,7 +12,7 @@ using System.Security.Claims;
 
 namespace Sds.ReceiptShare.Logic.Managers
 {
-    //TODO: Move all code from user controller into here and refactor controller
+    //TODO: Move all code from user controller into here and refactor controller.
     public class ApplicationUserManager : UserManager<ApplicationUser>
     {
         private readonly IRepository _repository; 

@@ -2,7 +2,7 @@
 
 namespace Sds.ReceiptShare.Logic.Models
 {
-    public class Currency
+    public class GroupCurrency
     {
         public int Id { get; set; }
         public string Name { get; set; }

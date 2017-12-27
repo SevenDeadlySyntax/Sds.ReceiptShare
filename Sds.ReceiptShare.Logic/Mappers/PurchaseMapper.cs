@@ -16,6 +16,8 @@ namespace Sds.ReceiptShare.Logic.Mappers
                 Currency = CurrencyMapper.MapCurrencyFromEntity(entity.Currency),
                 Description = entity.Description,
                 PurchaserId = entity.PurchaserId,
+                PurchaserName = entity.Purchaser.Name,
+                Date = entity.Created,
                 Beneficiaries = entity.Beneficiaries.Select(s => s.MemberId).ToList()
             };
         }

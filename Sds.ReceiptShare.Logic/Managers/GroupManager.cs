@@ -14,10 +14,13 @@ namespace Sds.ReceiptShare.Logic.Managers
 {
     public class GroupManager : Manager, IGroupManager
     {
-        public GroupManager(IRepository repository) : base(repository)
-        {
-        }
 
+        private readonly ApplicationUserManager _userManager;
+
+        public GroupManager(IRepository repository, ApplicationUserManager userManager) : base(repository)
+        {
+            _userManager = userManager;
+        }
 
         /// <summary>
         /// Just get the group's basic information. No linked objects
@@ -53,13 +56,14 @@ namespace Sds.ReceiptShare.Logic.Managers
         /// </summary>
         /// <param name="group">Object containing details for new group</param>
         /// <returns></returns>
-        public GroupAdd Add(GroupAdd group)
+        public int Add(GroupAdd group)
         {
             var newGroup = new Entities.Group()
             {
                 Created = DateTime.Now,
                 Name = group.Name,
-                PrimaryCurrencyId = group.PrimaryCurrencyId
+                PrimaryCurrencyId = group.PrimaryCurrencyId,
+                GroupCurrencies = new List<Entities.GroupCurrency>() { new Entities.GroupCurrency { CurrencyId = group.PrimaryCurrencyId, ConvertionRate = 1 } }
             };
 
             _repository.Insert(newGroup);
@@ -74,8 +78,8 @@ namespace Sds.ReceiptShare.Logic.Managers
 
             _repository.InsertManyToMany(groupMember);
             _repository.Save();
-
-            return group;
+            
+            return newGroup.Id;
         }
 
         public void Update(GroupDetails group)
@@ -88,7 +92,7 @@ namespace Sds.ReceiptShare.Logic.Managers
             _repository.Save();
         }
 
-        public void UpdateCurrencies(int id, IEnumerable<Currency> groupCurrencies)
+        public void UpdateCurrencies(int id, IEnumerable<GroupCurrency> groupCurrencies)
         {
             // TODO: check for admin
             var existingCurrencies = _repository.Read<Entities.Group>(id, "PrimaryCurrency", "GroupCurrencies", "GroupCurrencies.Currency").GroupCurrencies.ToList();
@@ -128,17 +132,27 @@ namespace Sds.ReceiptShare.Logic.Managers
             _repository.Save();
         }
 
-        public void AddMembers(int groupId, IEnumerable<string> groupMemberIds)
+        public void AddMembers(int groupId, IEnumerable<string> emailAddresses)
         {
-            foreach (var item in groupMemberIds)
+            // Check if user already exists and, if not, add one and email them with a registration link
+            foreach (var item in emailAddresses)
             {
-                _repository.InsertManyToMany(new Entities.GroupMember { GroupId = groupId, MemberId = item});
+                var user = _userManager.FindByEmailAsync(item).Result;
+                if (user == null)
+                {
+                    user = new Domain.Entities.ApplicationUser { UserName = item, Name = item, Email = item };
+                    var createdUser = _userManager.CreateAsync(user);
+
+                    // TODO: Email users if they are not already members
+                }
+
+                _repository.InsertManyToMany(new Entities.GroupMember { GroupId = groupId, MemberId = user.Id });
             }
 
             _repository.Save();
         }
 
-        public List<Currency> GetCurencies(int id, bool excludePrimary = false)
+        public List<GroupCurrency> GetCurencies(int id, bool excludePrimary = false)
         {
 
             var entities = _repository.Read<Entities.Group>(id, "PrimaryCurrency", "GroupCurrencies", "GroupCurrencies.Currency").GroupCurrencies.Where(s => !excludePrimary || s.CurrencyId != s.Group.PrimaryCurrency.Id);

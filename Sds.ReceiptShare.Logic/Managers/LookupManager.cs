@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Sds.ReceiptShare.Domain.Entities;
 using Sds.ReceiptShare.Data.Repository;
 using System.Linq.Expressions;
 using System.Linq;
+using Sds.ReceiptShare.Logic.Models.Lookup;
 
 namespace Sds.ReceiptShare.Logic.Managers
 {
@@ -18,21 +18,19 @@ namespace Sds.ReceiptShare.Logic.Managers
         {
         }
 
-        public T Add<T>(T item) where T : LookupEntity
+        public CurrencyLookupItem AddCurrency(CurrencyLookupItem currency)
         {
-            _repository.Insert<T>(item);
+            var item = _repository.Insert(new Domain.Entities.Currency { Name = currency.Name, Symbol = currency.Symbol });
             _repository.Save();
-            return item;
+            currency.Id = item.Id;
+            return currency;
         }
 
-        public List<T> GetAll<T>() where T : LookupEntity
+        public List<CurrencyLookupItem> GetAllCurrencies()
         {
-            return _repository.Read<T>().ToList();
-        }
+            var items = _repository.Read<Domain.Entities.Currency>();
 
-        public T Get<T>(int id) where T: LookupEntity
-        {
-            return _repository.Read<T>(id);
+            return items.Select(s => new CurrencyLookupItem() { Id = s.Id, Name = s.Name, Symbol = s.Symbol }).ToList();
         }
     }
 }

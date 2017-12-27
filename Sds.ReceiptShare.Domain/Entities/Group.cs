@@ -5,7 +5,6 @@ namespace Sds.ReceiptShare.Domain.Entities
 {
     public class Group : DeletableEntity
     {
-        public DateTime Created { get; set; }
         public string Name { get; set; }
 
         public int PrimaryCurrencyId { get; set; }

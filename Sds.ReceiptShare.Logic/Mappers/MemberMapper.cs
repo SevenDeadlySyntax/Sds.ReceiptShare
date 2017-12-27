@@ -13,7 +13,8 @@ namespace Sds.ReceiptShare.Logic.Mappers
                 Email = entity.Member.Email,
                 Id = entity.Member.Id,
                 ImageUrl = string.Empty, // TODO: Store this, update mapping
-                Name = entity.Member.Name
+                Name = entity.Member.Name,
+                IsAdministrator = entity.IsAdministrator
             };
         }
     }

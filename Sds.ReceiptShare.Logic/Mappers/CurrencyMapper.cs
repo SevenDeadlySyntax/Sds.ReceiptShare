@@ -5,7 +5,7 @@ namespace Sds.ReceiptShare.Logic.Mappers
 {
     internal static class CurrencyMapper
     {
-        internal static Currency MapCurrencyFromEntity(Entities.GroupCurrency entity)
+        internal static GroupCurrency MapCurrencyFromEntity(Entities.GroupCurrency entity)
         {
             var currency = MapCurrencyFromEntity(entity.Currency);
             currency.Rate = entity.ConvertionRate;
@@ -13,9 +13,9 @@ namespace Sds.ReceiptShare.Logic.Mappers
         }
 
 
-        internal static Currency MapCurrencyFromEntity(Entities.Currency entity)
+        internal static GroupCurrency MapCurrencyFromEntity(Entities.Currency entity)
         {
-            return new Currency()
+            return new GroupCurrency()
             {
                 Id = entity.Id,
                 Name = entity.Name,

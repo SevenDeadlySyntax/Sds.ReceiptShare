@@ -12,15 +12,15 @@ namespace Sds.ReceiptShare.Logic.Interfaces
         GroupDetails GetDetails(int id);
         ICollection<GroupBasicDetails> GetUserGroups(string userId); 
 
-        GroupAdd Add(GroupAdd group);
+        int Add(GroupAdd group);
         void Update(GroupDetails group);
 
         IEnumerable<MemberDetails> GetMembers(int groupId);
         void RemoveMember(int id, int groupMemberId);
-        void AddMembers(int groupId, IEnumerable<string> groupMembers);
+        void AddMembers(int groupId, IEnumerable<string> emailAddresses);
 
-        List<Currency> GetCurencies(int id, bool excludePrimary = false);
-        void UpdateCurrencies(int id, IEnumerable<Currency> groupCurrencies);
+        List<GroupCurrency> GetCurencies(int id, bool excludePrimary = false);
+        void UpdateCurrencies(int id, IEnumerable<GroupCurrency> groupCurrencies);
 
         PurchaseDetails GetPurchase(int id, int purchaseId);
         void AddPurchase(PurchaseAddUpdate purchase);
