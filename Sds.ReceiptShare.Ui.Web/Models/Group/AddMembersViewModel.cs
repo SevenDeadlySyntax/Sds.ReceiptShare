@@ -1,4 +1,6 @@
-﻿namespace Sds.ReceiptShare.Ui.Web.Models.Group
+﻿using System.Collections.Generic;
+
+namespace Sds.ReceiptShare.Ui.Web.Models.Group
 {
     public class AddMembersViewModel
     {

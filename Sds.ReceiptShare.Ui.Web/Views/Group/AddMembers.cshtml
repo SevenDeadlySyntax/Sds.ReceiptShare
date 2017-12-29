@@ -4,15 +4,22 @@
 }
 
 <h2>Add Members</h2>
-
 <hr />
-<div class="row">
+<div class="row" onload="loadMembers()">
     <div class="col-md-4">
+        <div class="form-group">
+            <label for="AddEmail">Add member</label>
+            <input id="AddEmail" type="email" placeholder="Email address" class="input-sm" />
+            <input type="button" value="Add" class="btn-link" onclick="addUser()" />
+        </div>
+
+        <ul id="Members" class="btn-group-vertical">Loading members...</ul>
+
         <form asp-action="AddMembers">
-            @Html.TextAreaFor(model => model.EmailAddresses)
+            @Html.HiddenFor(model => model.EmailAddresses)
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="Save" class="btn btn-sm" />
             </div>
         </form>
     </div>
@@ -22,3 +29,48 @@
     <a asp-action="Index">Back to group</a>
 </div>
 
+@section Scripts {
+    <script type="text/javascript">
+        var counter = 0;
+        var template = $('#template').html();
+
+        $(document).ready(function () {
+
+            var rendered = "";
+            var users = $('#EmailAddresses').val().split(',');
+
+            Mustache.parse(template);
+            users.forEach(function (index) {
+                counter++;
+                rendered += Mustache.render(template, { email: index, id: counter });
+            });
+
+            $('#Members').html(rendered);
+        });
+
+        function deleteUser(id) {
+            var item = $('#user-' + id);
+            var email = item.data("email");
+            item.remove();
+            var emails = $('#EmailAddresses').val().replace(email, "");
+            $('#EmailAddresses').val(emails);
+        }
+
+        function addUser() {
+            email = $('#AddEmail').val();
+            counter++;
+
+            var element = Mustache.render(template, { email: email, id: counter });
+            $('#Members').append(element);
+            var emails = $('#EmailAddresses').val() + ',' + email;
+            $('#EmailAddresses').val(emails)
+        }
+    </script>
+}
+
+<script id="template" type="x-tmpl-mustache">
+    <li id="user-{{id}}" class="btn-info" style="padding:5px; margin:2px;" data-email="{{email}}">
+        {{email}} <i id="user-{{id}}-delete" class="fa fa-trash" style="float:right;" aria-hidden="true" onclick="deleteUser({{id}})"></i>
+    </li>
+
+</script>

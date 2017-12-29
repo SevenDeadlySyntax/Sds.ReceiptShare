@@ -60,7 +60,7 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
                 }).OrderByDescending(s => s.Date).ToList()
             };
 
-            currencies?.ForEach(s => model.Currencies.Add(new Currency { Id = s.Id, Name = s.Name, Symbol = s.Symbol, Rate = s.Rate}));
+            currencies?.ForEach(s => model.Currencies.Add(new Currency { Id = s.Id, Name = s.Name, Symbol = s.Symbol, Rate = s.Rate }));
 
             return View(model);
         }
@@ -95,15 +95,18 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         [HttpGet]
         public IActionResult AddMembers(int id)
         {
+            var members = _groupManager.GetMembers(id);
+
             return View(new AddMembersViewModel()
             {
                 GroupId = id,
+                EmailAddresses = string.Join(",", members.Select(s => s.Email).ToArray())
             });
         }
 
         [HttpPost()]
         public IActionResult AddMembers(int id, AddMembersViewModel model)
-        {  
+        {
             _groupManager.AddMembers(id, model.EmailAddresses.Split(",").ToList());
             return RedirectToAction("Index", new { id = id });
         }
