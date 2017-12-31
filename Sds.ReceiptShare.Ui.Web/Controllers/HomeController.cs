@@ -68,9 +68,29 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
             return View();
         }
 
-        public IActionResult Error()
+        public IActionResult Error(int statusCode = 0)
         {
-            return View();
+            
+            var model = new Models.Error.Error() { ErrorCode = statusCode };
+
+            switch (statusCode)
+            {
+                case 401:
+                case 403:
+                    model.ErrorMessage = "You're not allowed in here.";
+                    model.Description = "You should try somewhere else instead.";
+                    break;
+                case 404:
+                    model.ErrorMessage = "This page doesn't exist.";
+                    model.Description = "You should try somewhere else instead.";
+                    break;
+                default:
+                    model.ErrorCode = 500;
+                    model.ErrorMessage = "Something has gone unexpectedly wrong. Sorry about that!";
+                    model.Description = "Hopefully someone has been made aware of this fuck up.";
+                    break;
+            }
+            return View(model);
         }
     }
 }

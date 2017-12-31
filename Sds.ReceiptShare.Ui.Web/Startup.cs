@@ -80,13 +80,15 @@ namespace Sds.ReceiptShare.Ui.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                //app.UseDatabaseErrorPage();
                 app.UseBrowserLink();
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
 
             app.UseStaticFiles();
 
