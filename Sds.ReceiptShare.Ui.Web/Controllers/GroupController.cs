@@ -23,12 +23,40 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         {
             _groupManager = groupManager;
             _userManager = userManager;
-            _lookupManager = lookupManager;
+            _lookupManager = lookupManager;            
+        }
+
+
+        /// <summary>
+        /// TODO: I think this ought to be in the manager classes (along with the isAdmin check) so that any calls to those 
+        /// methods are secured correctly. Perhaps they could throw a custom exception back to here which will result in the controller 
+        /// method returning an UnauthorizedResult.
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        private bool IsInGroup(int groupId)
+        {
+            var userId = HttpContext.User.Claims.First(s => s.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            return _userManager.IsInGroup(userId, groupId);
+        }
+
+        private bool IsAdministrator(int groupId)
+        {
+            var userId = HttpContext.User.Claims.First(s => s.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            return _userManager.IsAdministrator(userId, groupId);
         }
 
         public IActionResult Index(int id)
         {
+            // If no id is provided, then FUCK THIS. You're going home.
+            if (id == 0) return Redirect("/");
+
+            // You better be in the group too. TODO: I've tried to implement this as an Auth module but it was just too flaky. What else can we do?
+            if (!IsInGroup(id)) return new UnauthorizedResult();
+ 
             var group = _groupManager.GetDetails(id);
+            if (group == null) return new NotFoundResult();
+
             var members = _groupManager.GetMembers(id);
             var purchases = _groupManager.GetPurchases(id);
             var currencies = _groupManager.GetCurencies(id, true);
@@ -95,25 +123,31 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         [HttpGet]
         public IActionResult AddMembers(int id)
         {
+            if (!IsAdministrator(id)) return new UnauthorizedResult();
+
             var members = _groupManager.GetMembers(id);
+            var user = _userManager.GetUserAsync(HttpContext.User).Result;
 
             return View(new AddMembersViewModel()
             {
                 GroupId = id,
-                EmailAddresses = string.Join(",", members.Select(s => s.Email).ToArray())
+                EmailAddresses = string.Join(",", members.Where(s=>s.Email != user.Email).Select(s => s.Email).ToArray())
             });
         }
 
         [HttpPost()]
         public IActionResult AddMembers(int id, AddMembersViewModel model)
         {
-            _groupManager.AddMembers(id, model.EmailAddresses.Split(",").ToList());
+            if (!IsAdministrator(id)) return new UnauthorizedResult();
+            _groupManager.ManageMembers(id, model.EmailAddresses.Split(",").Where(s => !string.IsNullOrEmpty(s)).ToList());
             return RedirectToAction("Index", new { id = id });
         }
 
         [HttpGet]
         public IActionResult AddCurrencies(int id)
         {
+            if (!IsAdministrator(id)) return new UnauthorizedResult();
+
             var currencies = _lookupManager.GetAllCurrencies();
             var selectedCurrencies = _groupManager.GetCurencies(id);
             var checkboxList = new List<CurrencyCheckboxListItem>();
@@ -141,6 +175,8 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         [HttpPost()]
         public IActionResult AddCurrencies(int id, AddCurrenciesViewModel model)
         {
+            if (!IsAdministrator(id)) return new UnauthorizedResult();
+
             _groupManager.UpdateCurrencies(id, model.CurrencyCheckboxList.Where(s => s.Checked).Select(s =>
                  new GroupCurrency()
                  {
@@ -154,6 +190,8 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         [HttpGet]
         public IActionResult AddPurchase(int id)
         {
+            if (!IsInGroup(id)) return new UnauthorizedResult();
+
             var members = _groupManager.GetMembers(id);
             var currencies = _groupManager.GetCurencies(id);
 
@@ -173,6 +211,8 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         [HttpPost]
         public IActionResult AddPurchase(int id, AddPurchaseViewModel model)
         {
+            if (!IsInGroup(id)) return new UnauthorizedResult();
+
             var purchase = new Logic.Models.Purchase.PurchaseAddUpdate
             {
                 Amount = model.Value,
@@ -192,8 +232,9 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
         [HttpGet]
         public IActionResult EditPurchase(int id, int purchaseId)
         {
-            var model = new { };
+            if (!IsInGroup(id)) return new UnauthorizedResult();
 
+            var model = new { };
             return View(model);
         }
     }

@@ -132,10 +132,14 @@ namespace Sds.ReceiptShare.Logic.Managers
             _repository.Save();
         }
 
-        public void AddMembers(int groupId, IEnumerable<string> emailAddresses)
+        public void ManageMembers(int groupId, IEnumerable<string> emailAddresses)
         {
+            var members = ReadGroupMembers(groupId);
+
+            // Add new group members
             // Check if user already exists and, if not, add one and email them with a registration link
-            foreach (var item in emailAddresses)
+            var addedMembers = emailAddresses.Where(s => !members.Select(x => x.Member.Email).Contains(s));
+            foreach (var item in addedMembers)
             {
                 var user = _userManager.FindByEmailAsync(item).Result;
                 if (user == null)
@@ -147,6 +151,13 @@ namespace Sds.ReceiptShare.Logic.Managers
                 }
 
                 _repository.InsertManyToMany(new Entities.GroupMember { GroupId = groupId, MemberId = user.Id });
+            }
+
+            // Remove deteled group members
+            var deletedMembers = members.Where(s => !s.IsAdministrator && !emailAddresses.Contains(s.Member.Email));
+            foreach (var item in deletedMembers)
+            {
+                _repository.DeleteManyToMany<Entities.GroupMember>(item);
             }
 
             _repository.Save();
@@ -166,8 +177,13 @@ namespace Sds.ReceiptShare.Logic.Managers
 
         public IEnumerable<MemberDetails> GetMembers(int groupId)
         {
-            var entities = _repository.Read<Entities.Group>(groupId, "Members", "Members.Member").Members;
+            var entities = ReadGroupMembers(groupId);
             return entities.Select(s => MemberMapper.MapMemberDetailsFromEntity(s));
+        }
+
+        private IEnumerable<Entities.GroupMember> ReadGroupMembers(int groupId)
+        {
+            return _repository.Read<Entities.Group>(groupId, "Members", "Members.Member").Members;
         }
 
         public PurchaseDetails GetPurchase(int id, int purchaseId)
@@ -196,6 +212,6 @@ namespace Sds.ReceiptShare.Logic.Managers
         {
             var entities = _repository.Read<Entities.Group>(id, "Purchases", "Purchases.Purchaser", "Purchases.Beneficiaries", "Purchases.Beneficiaries.Member", "Purchases.Currency").Purchases;
             return entities.Select(s => PurchaseMapper.MapPurchaseDetailsFromEntity(s));
-        }
+        }        
     }
 }

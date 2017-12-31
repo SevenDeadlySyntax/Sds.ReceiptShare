@@ -9,19 +9,24 @@
     <div class="col-md-4">
         <div class="form-group">
             <label for="AddEmail">Add member</label>
-            <input id="AddEmail" type="email" placeholder="Email address" class="input-sm" />
-            <input type="button" value="Add" class="btn-link" onclick="addUser()" />
+            <input id="AddEmail" type="email" placeholder="Email address" class="input-sm" inputmode="email" />
+            <input type="button" value="Add" class="btn-link" onclick="addMember()" />
+            <label id="AddEmailValidator" class="alert-danger" style="display:none;">Please enter a valid email address for a member not already listed.</label>
         </div>
 
-        <ul id="Members" class="btn-group-vertical">Loading members...</ul>
+        <div class="form-group">
+            <div id="Members" class="btn-group-vertical">Loading members...</div>
+        </div>
 
-        <form asp-action="AddMembers">
-            @Html.HiddenFor(model => model.EmailAddresses)
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-sm" />
-            </div>
-        </form>
+        <div class="form-group">
+            <form asp-action="AddMembers">
+                @Html.HiddenFor(model => model.EmailAddresses)
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn-primary btn-sm" />
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -37,40 +42,67 @@
         $(document).ready(function () {
 
             var rendered = "";
-            var users = $('#EmailAddresses').val().split(',');
+            var emailAddresses = $('#EmailAddresses').val();
+            if (emailAddresses !== '') {
+                var members = emailAddresses.split(',');
 
-            Mustache.parse(template);
-            users.forEach(function (index) {
-                counter++;
-                rendered += Mustache.render(template, { email: index, id: counter });
-            });
+                Mustache.parse(template);
+                members.forEach(function (index) {
+                    counter++;
+                    rendered += Mustache.render(template, { email: index, id: counter });
+                });
 
-            $('#Members').html(rendered);
+                $('#Members').html(rendered);
+            } else {
+                $('#Members').html($('#nomembersTemplate').html());
+            }
         });
 
-        function deleteUser(id) {
-            var item = $('#user-' + id);
+        function deleteMember(id) {
+            var item = $('#member-' + id);
             var email = item.data("email");
             item.remove();
             var emails = $('#EmailAddresses').val().replace(email, "");
             $('#EmailAddresses').val(emails);
         }
 
-        function addUser() {
-            email = $('#AddEmail').val();
-            counter++;
+        function addMember() {
+            var emailBox = $('#AddEmail');
+            var membersList = $('#Members');
+            var emailAddressesHidden = $('#EmailAddresses');
+            email = emailBox.val();
 
-            var element = Mustache.render(template, { email: email, id: counter });
-            $('#Members').append(element);
-            var emails = $('#EmailAddresses').val() + ',' + email;
-            $('#EmailAddresses').val(emails)
+            if (validateEmail(email) && emailAddressesHidden.val().indexOf(email) == -1) {
+                $('#AddEmailValidator').hide()
+                $('#noMembersWarning').hide()
+                emailBox.val('');
+
+                counter++;
+
+                var element = Mustache.render(template, { email: email, id: counter });
+                membersList.append(element);
+                var emails = emailAddressesHidden.val() + ',' + email;
+                emailAddressesHidden.val(emails)
+            } else {
+                $('#AddEmailValidator').show()
+            }
+
+            emailBox.focus();           
+        }
+
+        function validateEmail($email) {
+            var emailReg = /^([a-zA-Z0-9_.+-])+\@@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            return emailReg.test($email);
         }
     </script>
 }
 
 <script id="template" type="x-tmpl-mustache">
-    <li id="user-{{id}}" class="btn-info" style="padding:5px; margin:2px;" data-email="{{email}}">
-        {{email}} <i id="user-{{id}}-delete" class="fa fa-trash" style="float:right;" aria-hidden="true" onclick="deleteUser({{id}})"></i>
-    </li>
+    <div id="member-{{id}}" class="btn-info" style="padding:5px; margin:2px;" data-email="{{email}}">
+        {{email}} <i id="member-{{id}}-delete" class="fa fa-trash" style="float:right; padding:3px 0 0 10px;" aria-hidden="true" onclick="deleteMember({{id}})"></i>
+    </div>
+</script>
 
+<script id="nomembersTemplate" type="x-tmpl-mustache">
+    <div id="noMembersWarning" class="bg-warning warning">No one else is in your group yet!</div>
 </script>

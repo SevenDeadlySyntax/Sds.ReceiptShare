@@ -32,7 +32,22 @@ namespace Sds.ReceiptShare.Logic.Managers
         }
 
         public IEnumerable<GroupMember> GetGroups(ApplicationUser user){
-            return _repository.GetGroups(user.Id);
+            return GetGroups(user.Id);
+        }
+
+        public IEnumerable<GroupMember> GetGroups(string id)
+        {
+            return _repository.GetGroups(id);
+        }
+
+        public bool IsAdministrator(string id, int groupId)
+        {
+            return GetGroups(id).Any(s=> s.GroupId == groupId && s.IsAdministrator);
+        }
+
+        public bool IsInGroup(string id, int groupId)
+        {
+            return _repository.GetGroups(id).Any(s => s.GroupId == groupId);
         }
     }
 }

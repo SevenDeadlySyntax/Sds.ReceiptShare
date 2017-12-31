@@ -17,7 +17,7 @@ namespace Sds.ReceiptShare.Logic.Interfaces
 
         IEnumerable<MemberDetails> GetMembers(int groupId);
         void RemoveMember(int id, int groupMemberId);
-        void AddMembers(int groupId, IEnumerable<string> emailAddresses);
+        void ManageMembers(int groupId, IEnumerable<string> emailAddresses);
 
         List<GroupCurrency> GetCurencies(int id, bool excludePrimary = false);
         void UpdateCurrencies(int id, IEnumerable<GroupCurrency> groupCurrencies);
