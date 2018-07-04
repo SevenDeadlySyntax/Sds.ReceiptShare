@@ -10,5 +10,6 @@ namespace Sds.ReceiptShare.Ui.Web.Models.Group
         public double Value { get; set; }
         public string PurchasedBy { get; set; }
         public DateTime Date { get; set; }
+        public PurchaseBeneficiaries Beneficiaries { get; internal set; }
     }
 }

@@ -6,15 +6,45 @@
 <div>
     <h4>Group Details</h4>
     <hr />
-    @foreach (var item in Model.Purchases)
-    {
-        <div>
-            <div class="col-ms-2">@item.PurchasedBy </div>
-            <div class="col-ms-2">@item.Name </div>
-            <div class="col-ms-2">@item.Value </div>
-            <div class="col-ms-2">@item.Date.Date </div>
-        </div>
-    }
+    <table class="table-bordered table-hover">
+        <thead>
+            <tr>
+                <td>Purchaser</td>
+                <td>Purchase Description</td>
+                <td>Currency</td>
+                <td>Amount</td>
+                <td>Date</td>
+                @foreach (var item in Model.Members)
+                {
+                    <td>@item.Name</td>
+                }
+                <td></td>
+                <td></td>
+            </tr>
+        </thead>
+        @foreach (var item in Model.Purchases)
+        {
+            var beneficiaries = item.Beneficiaries.Beneficiaries;
+            var amount = beneficiaries.First().Amount;
+            <tr>
+                <td class="col-ms-2">@item.PurchasedBy </td>
+                <td class="col-ms-2">@item.Name </td>
+                <td class="col-ms-2">@item.Currency.Symbol </td>
+                <td class="col-ms-2">@item.Value </td>
+                <td class="col-ms-2">@item.Date.Date </td>
+                @foreach (var person in Model.Members)
+                {
+                    <td>
+                        @if (beneficiaries.Select(s=>s.Name).ToList().Contains(person.UserId)) {
+                        <div> @amount </div>
+                        }
+                    </td>
+                }
+                <td>Delete</td>
+                <td>Edit</td>
+            </tr>
+        }
+    </table>
     <dl class="dl-horizontal">        
         <dt>
             @Html.DisplayNameFor(model => model.Members)

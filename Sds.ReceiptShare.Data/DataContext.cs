@@ -37,7 +37,7 @@ namespace Sds.ReceiptShare.Data
             modelBuilder.Entity<Purchase>().HasMany(p => p.Beneficiaries).WithOne(b => b.Purchase).HasForeignKey(b => b.PurchaseId).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Purchase>().HasOne(p => p.Currency).WithMany().HasForeignKey(p => p.CurrencyId).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Purchase>().HasOne<Group>().WithMany(g => g.Purchases).HasForeignKey(g => g.GroupId).OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<Purchase>().HasOne<ApplicationUser>().WithMany(m => m.Purchases).HasForeignKey(p => p.PurchaserId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Purchase>().HasOne(p=> p.Purchaser).WithMany(m => m.Purchases).HasForeignKey(p => p.PurchaserId).OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<PurchaseBeneficiary>().HasKey(pb => new { pb.PurchaseId, pb.MemberId });
 

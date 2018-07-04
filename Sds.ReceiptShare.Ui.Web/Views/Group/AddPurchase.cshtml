@@ -30,13 +30,14 @@
                 <span asp-validation-for="Purchaser" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Beneficiaries" class="control-label"></label>
                 @if (@Model.Beneficiaries != null && @Model.Beneficiaries.Items.Count() > 0)
                 {
                     for (int i = 0; i < @Model.Beneficiaries.Items.Count(); i++)
                     {
                         <div>
-                            <input asp-for="@Model.Beneficiaries.Items[i].IsChecked" type="checkbox" />
-                            <label asp-for="@Model.Beneficiaries.Items[i].IsChecked">@Model.Beneficiaries.Items[i].Text</label>
+                            <input asp-for="@Model.Beneficiaries.Items[i].IsChecked" type="checkbox" class="checkbox-inline"/>
+                            <label asp-for="@Model.Beneficiaries.Items[i].IsChecked" class="input-sm">@Model.Beneficiaries.Items[i].Text</label>
                             @*If these are not included, all OptionIds become 0 and all OptionName becomes null*@
                             @Html.HiddenFor(x => @Model.Beneficiaries.Items[i].Value)
                             @Html.HiddenFor(y => @Model.Beneficiaries.Items[i].Text)

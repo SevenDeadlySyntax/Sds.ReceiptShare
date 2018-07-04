@@ -65,7 +65,7 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
                 Id = group.Id,
                 Name = group.Name,
                 CreatedOn = group.Created,
-                Members = members?.Select(s => new Member { Name = s.Name, UserId = s.Id, IsAdministrator = s.IsAdministrator }).ToList(),
+                Members = members?.Select(s => new Member { Name = s.Name, UserId = s.Id, IsAdministrator = s.IsAdministrator }).ToList(),                
                 Currencies = new List<Currency>
                 {
                     new Currency
@@ -84,7 +84,8 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
                     PurchasedBy = s.PurchaserName,
                     Id = s.Id,
                     Date = s.Date,
-                    Currency = new Currency { Name = s.Currency.Name, Symbol = s.Currency.Symbol }
+                    Currency = new Currency { Name = s.Currency.Name, Symbol = s.Currency.Symbol },
+                    Beneficiaries = new PurchaseBeneficiaries(s.Beneficiaries, s.Amount)
                 }).OrderByDescending(s => s.Date).ToList()
             };
 
