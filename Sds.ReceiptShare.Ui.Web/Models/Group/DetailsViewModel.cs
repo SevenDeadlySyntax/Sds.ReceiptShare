@@ -11,5 +11,7 @@ namespace Sds.ReceiptShare.Ui.Web.Models.Group
         public List<Member> Members { get; set; }
         public List<Purchase> Purchases { get; set; }
         public List<Currency> Currencies { get; internal set; }
+        public IEnumerable<Repayment> Repayments { get; internal set; }
+        public Currency PrimaryCurrency { get; internal set; }
     }
 }

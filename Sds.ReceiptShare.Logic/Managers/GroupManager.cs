@@ -43,7 +43,7 @@ namespace Sds.ReceiptShare.Logic.Managers
             var entity = _repository.Read<Entities.Group>(id, "Members", "Members.Member", "PrimaryCurrency", "GroupCurrencies", "GroupCurrencies.Currency");
             return GroupMapper.MapGroupDetailsFromEntity(entity);
         }
-        
+
         // TODO: Probably this should be in a user manager
         public ICollection<GroupBasicDetails> GetUserGroups(string memberId)
         {
@@ -72,13 +72,13 @@ namespace Sds.ReceiptShare.Logic.Managers
             var groupMember = new Entities.GroupMember()
             {
                 GroupId = newGroup.Id,
-                MemberId = group.CreatorId,                
+                MemberId = group.CreatorId,
                 IsAdministrator = true,
             };
 
             _repository.InsertManyToMany(groupMember);
             _repository.Save();
-            
+
             return newGroup.Id;
         }
 
@@ -104,7 +104,7 @@ namespace Sds.ReceiptShare.Logic.Managers
             {
                 foreach (var item in entitiesToAdd)
                 {
-                    _repository.InsertManyToMany(new Entities.GroupCurrency { CurrencyId = item.Id, GroupId = id, ConvertionRate = item.Rate});
+                    _repository.InsertManyToMany(new Entities.GroupCurrency { CurrencyId = item.Id, GroupId = id, ConvertionRate = item.Rate });
                 }
 
                 _repository.Save();
@@ -178,7 +178,7 @@ namespace Sds.ReceiptShare.Logic.Managers
         public IEnumerable<MemberDetails> GetMembers(int groupId)
         {
             var entities = ReadGroupMembers(groupId);
-            return entities.Select(s => MemberMapper.MapMemberDetailsFromEntity(s));
+            return entities.Select(s => MemberMapper.MapMemberDetailsFromEntity(s, new MemberDetails()));
         }
 
         private IEnumerable<Entities.GroupMember> ReadGroupMembers(int groupId)
@@ -212,6 +212,70 @@ namespace Sds.ReceiptShare.Logic.Managers
         {
             var entities = _repository.Read<Entities.Group>(id, "Purchases", "Purchases.Purchaser", "Purchases.Beneficiaries", "Purchases.Beneficiaries.Member", "Purchases.Currency").Purchases;
             return entities.Select(s => PurchaseMapper.MapPurchaseDetailsFromEntity(s));
-        }        
+        }
+
+        public IEnumerable<MemberDetailsWithSummary> GetMembersWithSummary(int groupId)
+        {
+            var entities = ReadGroupMembers(groupId);
+            var members = entities.Select(s => MemberMapper.MapMemberDetailsFromEntity(s, new MemberDetailsWithSummary())).ToList();
+            var purchases = GetPurchases(groupId);
+
+            // Could this be made more efficient?
+
+            foreach (var item in members)
+            {
+                // Get all the purchases the user has benefitted from
+                var benefitedPurchases = purchases.Where(s => s.Beneficiaries.Contains(item.Id)).ToList();
+
+                // Devide the amount by the rate and split that by the number of beneficiaries.                
+                item.TotalBenefit = benefitedPurchases.Select(s => (s.Amount / s.Currency.Rate) / s.Beneficiaries.Count()).Sum();
+
+                // Get all the purchases the user has made
+                var purchasesMade = purchases.Where(s => s.PurchaserId.Contains(item.Id)).ToList();
+
+                // Transfer them into the group's primary currency and save the sum in the model
+                item.TotalContribution = purchasesMade.Select(s => s.Amount / s.Currency.Rate).Sum();
+
+            }
+
+            return members;
+        }
+
+        public IEnumerable<RepaymentDetails> CalculateRepayments(int groupId)
+        {
+            var members = GetMembersWithSummary(groupId);
+            var creditors = new Dictionary<string, double>();
+            members.Where(s => s.TotalBenefit - s.TotalContribution < 0).OrderBy(s => s.TotalBenefit - s.TotalContribution).ToList().ForEach(s => creditors.Add(s.Id, Math.Abs(s.TotalBenefit - s.TotalContribution))); 
+            var debtors = members.Where(s => s.TotalBenefit - s.TotalContribution > 0);
+
+            var repayments = new List<RepaymentDetails>();
+            foreach (var item in debtors)
+            {
+                var debt = item.TotalBenefit - item.TotalContribution;
+
+                while (creditors.Any(s => s.Value > 0))
+                {
+                    // Pick a creditor and decide how much to pay them
+                    var creditor = creditors.First(s=> s.Value > 0);
+                    var deduction = Math.Min(debt, creditor.Value);
+
+                    // Update the creditor's credit and the debptor's debt to reflect this payment
+                    creditors[creditor.Key] = creditor.Value - deduction;
+                    debt -= deduction;
+
+                    // Create new payment record
+                    repayments.Add(new RepaymentDetails
+                    {
+                        PayerId = item.Id,
+                        PayerName = item.Name,
+                        Value = deduction,
+                        RecipientId = creditor.Key,
+                        RecipientName = "TODO"
+                    });
+                };
+            }
+
+            return repayments;
+        }
     }
 }

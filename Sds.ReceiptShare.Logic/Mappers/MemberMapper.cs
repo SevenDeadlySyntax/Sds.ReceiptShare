@@ -6,16 +6,15 @@ namespace Sds.ReceiptShare.Logic.Mappers
 {
     internal static class MemberMapper
     {
-        internal static MemberDetails MapMemberDetailsFromEntity(Entities.GroupMember entity)
+        internal static T MapMemberDetailsFromEntity<T>(Entities.GroupMember entity, T result) where T : MemberDetails
         {
-            return new MemberDetails()
-            {
-                Email = entity.Member.Email,
-                Id = entity.Member.Id,
-                ImageUrl = string.Empty, // TODO: Store this, update mapping
-                Name = entity.Member.Name,
-                IsAdministrator = entity.IsAdministrator
-            };
+
+            result.Email = entity.Member.Email;
+            result.Id = entity.Member.Id;
+            result.ImageUrl = string.Empty; // TODO: Store this, update mapping
+            result.Name = entity.Member.Name;
+            result.IsAdministrator = entity.IsAdministrator;
+            return result;
         }
     }
 }

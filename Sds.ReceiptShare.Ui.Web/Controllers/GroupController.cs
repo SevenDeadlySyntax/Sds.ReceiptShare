@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Sds.ReceiptShare.Logic.Models.Group;
 using Sds.ReceiptShare.Logic.Models;
+using Sds.ReceiptShare.Core.ExtensionMethods;
 
 namespace Sds.ReceiptShare.Ui.Web.Controllers
 {
@@ -57,40 +58,44 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
             var group = _groupManager.GetDetails(id);
             if (group == null) return new NotFoundResult();
 
-            var members = _groupManager.GetMembers(id);
+            var members = _groupManager.GetMembersWithSummary(id);
             var purchases = _groupManager.GetPurchases(id);
             var currencies = _groupManager.GetCurencies(id, true);
+            var repayments = _groupManager.CalculateRepayments(id);
             var model = new DetailsViewModel()
             {
                 Id = group.Id,
                 Name = group.Name,
                 CreatedOn = group.Created,
-                Members = members?.Select(s => new Member { Name = s.Name, UserId = s.Id, IsAdministrator = s.IsAdministrator }).ToList(),                
-                Currencies = new List<Currency>
+                Members = members?.Select(s => new Member
                 {
-                    new Currency
-                    {
-                        Id = group.PrimaryCurrency.Id,
-                        Name = group.PrimaryCurrency.Name,
-                        Symbol = group.PrimaryCurrency.Symbol,
-                        Rate = 1,
-                        IsPrimary = true
-                    }
+                    Name = s.Name,
+                    UserId = s.Id,
+                    IsAdministrator = s.IsAdministrator,
+                    TotalBenefit = s.TotalBenefit.Round(),
+                    TotalContribution = s.TotalContribution.Round() }).ToList(),
+                PrimaryCurrency = new Currency
+                {
+                    Id = group.PrimaryCurrency.Id,
+                    Name = group.PrimaryCurrency.Name,
+                    Symbol = group.PrimaryCurrency.Symbol,
+                    Rate = 1,
+                    IsPrimary = true
                 },
+                Currencies = currencies.Select(s=> new Currency { Id = s.Id, Name = s.Name, Symbol = s.Symbol, Rate = s.Rate }).ToList(),            
                 Purchases = purchases.Select(s => new Purchase
                 {
                     Name = s.Description,
-                    Value = s.Amount,
+                    Value = s.Amount.Round(),
                     PurchasedBy = s.PurchaserName,
                     Id = s.Id,
                     Date = s.Date,
                     Currency = new Currency { Name = s.Currency.Name, Symbol = s.Currency.Symbol },
-                    Beneficiaries = new PurchaseBeneficiaries(s.Beneficiaries, s.Amount)
-                }).OrderByDescending(s => s.Date).ToList()
+                    Beneficiaries = new PurchaseBeneficiaries(s.Beneficiaries, s.Amount.Round())
+                }).OrderByDescending(s => s.Date).ToList(),
+                Repayments = repayments.Select(s => new Repayment() { Payer = s.PayerName, Recipient = s.RecipientName, Value = s.Value.Round()})
             };
-
-            currencies?.ForEach(s => model.Currencies.Add(new Currency { Id = s.Id, Name = s.Name, Symbol = s.Symbol, Rate = s.Rate }));
-
+            
             return View(model);
         }
 
