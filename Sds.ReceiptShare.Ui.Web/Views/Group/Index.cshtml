@@ -6,7 +6,7 @@
 <a asp-action="Index" asp-controller="Home">Back to Groups</a>
 <div class="panel">
     <h4>Purchases Overview</h4>
-    <div class="panel-body">
+    <div class="panel-body" style="overflow-x:scroll;">
         <table class="table table-responsive table-striped table-hover">
             <thead>
                 <tr>
@@ -58,7 +58,7 @@
                     <th>Total Benefit</th>
                     @foreach (var item in Model.Members)
                     {
-                    <td>@Model.PrimaryCurrency.Symbol@item.TotalBenefit</td>
+                        <td>@Model.PrimaryCurrency.Symbol@item.TotalBenefit</td>
 
                     }
                     <td colspan="2"></td>
@@ -68,7 +68,7 @@
                     <th>Total Contribution</th>
                     @foreach (var item in Model.Members)
                     {
-                    <td>@Model.PrimaryCurrency.Symbol@item.TotalContribution</td>
+                        <td>@Model.PrimaryCurrency.Symbol@item.TotalContribution</td>
                     }
                     <td colspan="2"></td>
                 </tr>
@@ -77,13 +77,14 @@
                     <th>Balance</th>
                     @foreach (var item in Model.Members)
                     {
-                    <td class="@(item.Balance > 0 ? "label-success" :"label-danger")">@Model.PrimaryCurrency.Symbol@item.Balance</td>
+                        <td class="@(item.Balance > 0 ? "label-success" :"label-danger")">@Model.PrimaryCurrency.Symbol@item.Balance</td>
                     }
                     <td colspan="2"></td>
                 </tr>
             </tfoot>
         </table>
-
+    </div>
+    <div class="panel-footer">
         <a asp-action="AddPurchase" asp-route-id="@Model.Id" class="btn-lg">Add Purchase</a><br />
         <a asp-action="AddMembers" asp-route-id="@Model.Id" class="btn-lg">Manage Members</a><br />
     </div>
@@ -93,11 +94,11 @@
     <div class="panel-body">
         @foreach (var item in Model.Repayments)
         {
-        <div class="row">
-            <span class="col-md-2">@item.Payer <b>pays</b></span>
-            <span class="col-md-2">@item.Recipient</span>
-            <span class="col-md-2">@Model.PrimaryCurrency.Symbol@item.Value</span>
-        </div>
+            <div class="row">
+                <span class="col-md-2">@item.Payer <b>pays</b></span>
+                <span class="col-md-2">@item.Recipient</span>
+                <span class="col-md-2">@Model.PrimaryCurrency.Symbol@item.Value</span>
+            </div>
         }
     </div>
 </div>
@@ -115,10 +116,10 @@
         @foreach (var item in Model.Currencies)
         {
             <div class="row">
-                <span class="col-md-2">@item.Name<span>s</span> &#40;@item.Symbol&#41;</span>                
+                <span class="col-md-2">@item.Name<span>s</span> &#40;@item.Symbol&#41;</span>
                 <span class="label-warning col-md-2">@item.Symbol@item.Rate to @Model.PrimaryCurrency.Symbol<span>1</span></span>
             </div>
         }
-    </div>    
+    </div>
     <a asp-action="AddCurrencies" asp-route-id="@Model.Id" class="btn-lg">Manage Currencies</a>
 </div>

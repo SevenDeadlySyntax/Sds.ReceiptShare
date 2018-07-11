@@ -111,8 +111,25 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await _userManager.CreateAsync(user, model.Password);
+
+                // Check if the user exists
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                IdentityResult result;
+
+                if (user != null)
+                {
+                    // If exists, add password (if they don't already have one
+                   result = await _userManager.AddPasswordAsync(user, model.ConfirmPassword);
+                }
+                else
+                {
+                    // If they do not exist, create one
+                    user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                    result = await _userManager.CreateAsync(user, model.Password);
+                }
+
+                // If successful, they will need to validate their email address
+                // TODO: implement email validation
                 if (result.Succeeded)
                 {
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
@@ -125,6 +142,7 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
                     _logger.LogInformation(3, "User created a new account with password.");
                     return RedirectToAction("SetName", "Manage", new { ReturnUrl = returnUrl });
                 }
+
                 AddErrors(result);
             }
 

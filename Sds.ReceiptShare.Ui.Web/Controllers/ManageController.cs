@@ -100,23 +100,23 @@ namespace Sds.ReceiptShare.Ui.Web.Controllers
             var user = _userManager.GetUserAsync(HttpContext.User).Result;
             var model = new SetNameViewModel()
             {
-                Name = user.UserName ?? user.Email,
+                Name = user.Name ?? user.Email,
                 ReturnUrl = returnUrl
             };
 
             return View(model);
         }
 
-        [HttpPut]
+        [HttpPost]
         public async Task<IActionResult> SetName(SetNameViewModel model)
         {
             var user = _userManager.GetUserAsync(HttpContext.User).Result;
-            user.UserName = model.Name;
+            user.Name = model.Name;
             await _userManager.UpdateAsync(user);
 
             if (!string.IsNullOrEmpty(model.ReturnUrl)) return Redirect(model.ReturnUrl);
 
-            return RedirectToAction("Index");
+            return RedirectToRoute("Groups/Index");
         }
 
         //

@@ -9,6 +9,7 @@ using Sds.ReceiptShare.Logic.Models.Member;
 using Sds.ReceiptShare.Logic.Models;
 using Sds.ReceiptShare.Logic.Mappers;
 using Sds.ReceiptShare.Logic.Models.Purchase;
+using Sds.ReceiptShare.Core.ExtensionMethods;
 
 namespace Sds.ReceiptShare.Logic.Managers
 {
@@ -245,6 +246,7 @@ namespace Sds.ReceiptShare.Logic.Managers
         {
             var members = GetMembersWithSummary(groupId);
             var creditors = new Dictionary<string, double>();
+
             members.Where(s => s.TotalBenefit - s.TotalContribution < 0).OrderBy(s => s.TotalBenefit - s.TotalContribution).ToList().ForEach(s => creditors.Add(s.Id, Math.Abs(s.TotalBenefit - s.TotalContribution))); 
             var debtors = members.Where(s => s.TotalBenefit - s.TotalContribution > 0);
 
@@ -253,7 +255,7 @@ namespace Sds.ReceiptShare.Logic.Managers
             {
                 var debt = item.TotalBenefit - item.TotalContribution;
 
-                while (creditors.Any(s => s.Value > 0))
+                while (debt.Round() > 0 && creditors.Any(s => s.Value > 0))
                 {
                     // Pick a creditor and decide how much to pay them
                     var creditor = creditors.First(s=> s.Value > 0);
@@ -270,7 +272,7 @@ namespace Sds.ReceiptShare.Logic.Managers
                         PayerName = item.Name,
                         Value = deduction,
                         RecipientId = creditor.Key,
-                        RecipientName = "TODO"
+                        RecipientName = members.First(s => s.Id == creditor.Key).Name
                     });
                 };
             }
