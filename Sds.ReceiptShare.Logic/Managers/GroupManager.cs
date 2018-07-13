@@ -211,7 +211,7 @@ namespace Sds.ReceiptShare.Logic.Managers
 
         public IEnumerable<PurchaseDetails> GetPurchases(int id)
         {
-            var entities = _repository.Read<Entities.Group>(id, "Purchases", "Purchases.Purchaser", "Purchases.Beneficiaries", "Purchases.Beneficiaries.Member", "Purchases.Currency").Purchases;
+            var entities = _repository.Read<Entities.Group>(id, "Purchases", "Purchases.Purchaser", "Purchases.Beneficiaries", "Purchases.Beneficiaries.Member", "Purchases.Currency", "Purchases.Currency.Currency").Purchases;
             return entities.Select(s => PurchaseMapper.MapPurchaseDetailsFromEntity(s));
         }
 

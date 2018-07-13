@@ -12,6 +12,12 @@ namespace Sds.ReceiptShare.Logic.Mappers
             return currency;
         }
 
+        internal static GroupCurrency MapCurrencyFromEntity(Entities.Currency entity, double conversionRate)
+        {
+            var currency = MapCurrencyFromEntity(entity);
+            currency.Rate = conversionRate;
+            return currency;
+        }
 
         internal static GroupCurrency MapCurrencyFromEntity(Entities.Currency entity)
         {

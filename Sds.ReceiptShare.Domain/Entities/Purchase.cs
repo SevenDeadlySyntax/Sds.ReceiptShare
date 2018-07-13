@@ -8,7 +8,7 @@ namespace Sds.ReceiptShare.Domain.Entities
         public double Amount { get; set; }
 
         public int CurrencyId { get; set; }
-        public Currency Currency { get; set; }
+        public GroupCurrency Currency { get; set; }
 
         public string PurchaserId { get; set; }
         public ApplicationUser Purchaser { get; set; }

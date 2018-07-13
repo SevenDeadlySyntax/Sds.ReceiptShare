@@ -94,11 +94,12 @@
     <div class="panel-body">
         @foreach (var item in Model.Repayments)
         {
-            <div class="row">
-                <span class="col-md-2">@item.Payer <b>pays</b></span>
-                <span class="col-md-2">@item.Recipient</span>
-                <span class="col-md-2">@Model.PrimaryCurrency.Symbol@item.Value</span>
-            </div>
+        <div class="row">
+            <span class="col-md-3 text-right">@item.Payer</span>
+            <span class="col-md-1 text-center">pays</span>
+            <span class="col-md-3">@item.Recipient</span>
+            <span class="col-md-2 text-info">@Model.PrimaryCurrency.Symbol@item.Value</span>
+        </div>
         }
     </div>
 </div>

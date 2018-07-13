@@ -5,19 +5,24 @@
 
 <h2>Hi @Model.UserName</h2>
 
-<a asp-action="Create" asp-controller="Group">Create group</a>
+<div>
+    <div class="page-header col-md-12">
+        <a asp-action="Create" asp-controller="Group">Create group</a>
+        <h4>Groups you're in:</h4>
+    </div>
 
-<h4>Groups you're in:</h4>
-@if (Model.Groups != null && Model.Groups.Any())
-{
-    <p>You are currently in @Model.Groups.Count groups</p>
-
-    foreach (var item in Model.Groups)
-    {
-        <a asp-controller="Group" asp-route-id="@item.Id">@item.Name</a>
-    }
-}
-else
-{
-    <p>You're not in any groups yet</p>
-}
+    <div class="page-body col-md-12">
+        @if (Model.Groups != null && Model.Groups.Any())
+        {
+            @foreach (var item in Model.Groups)
+            {
+                <div class="row col-md-12"><a asp-controller="Group" class=" btn-default" asp-route-id="@item.Id">@item.Name</a></div>
+            }
+        }
+        else
+        {
+            <h6>You're not in any groups yet!</h6>
+        }
+    </div>
+    <div class="page-footer col-md-12"><p>You are currently in @Model.Groups.Count groups</p></div>
+</div>
